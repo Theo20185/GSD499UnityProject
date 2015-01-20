@@ -1,0 +1,129 @@
+fileFormatVersion: 2
+guid: 87c1bc94ef6d51544a2da73c65d192ee
+ModelImporter:
+  serializedVersion: 16
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: DUCK_
+    100004: DUCK_ Head
+    100006: DUCK_ L Calf
+    100008: DUCK_ L Clavicle
+    100010: DUCK_ L Foot
+    100012: DUCK_ L Forearm
+    100014: DUCK_ L Hand
+    100016: DUCK_ L HorseLink
+    100018: DUCK_ L Thigh
+    100020: DUCK_ L Toe0
+    100022: DUCK_ L Toe01
+    100024: DUCK_ L Toe02
+    100026: DUCK_ L UpperArm
+    100028: DUCK_ Neck
+    100030: DUCK_ Neck1
+    100032: DUCK_ Neck2
+    100034: DUCK_ Pelvis
+    100036: DUCK_ Queue de cheval 1
+    100038: DUCK_ R Calf
+    100040: DUCK_ R Clavicle
+    100042: DUCK_ R Foot
+    100044: DUCK_ R Forearm
+    100046: DUCK_ R Hand
+    100048: DUCK_ R HorseLink
+    100050: DUCK_ R Thigh
+    100052: DUCK_ R Toe0
+    100054: DUCK_ R Toe01
+    100056: DUCK_ R Toe02
+    100058: DUCK_ R UpperArm
+    100060: DUCK_ Spine
+    100062: DUCK_ Tail
+    100064: DUCK_ TailL
+    100066: DUCK_ TailR
+    400000: //RootNode
+    400002: DUCK_
+    400004: DUCK_ Head
+    400006: DUCK_ L Calf
+    400008: DUCK_ L Clavicle
+    400010: DUCK_ L Foot
+    400012: DUCK_ L Forearm
+    400014: DUCK_ L Hand
+    400016: DUCK_ L HorseLink
+    400018: DUCK_ L Thigh
+    400020: DUCK_ L Toe0
+    400022: DUCK_ L Toe01
+    400024: DUCK_ L Toe02
+    400026: DUCK_ L UpperArm
+    400028: DUCK_ Neck
+    400030: DUCK_ Neck1
+    400032: DUCK_ Neck2
+    400034: DUCK_ Pelvis
+    400036: DUCK_ Queue de cheval 1
+    400038: DUCK_ R Calf
+    400040: DUCK_ R Clavicle
+    400042: DUCK_ R Foot
+    400044: DUCK_ R Forearm
+    400046: DUCK_ R Hand
+    400048: DUCK_ R HorseLink
+    400050: DUCK_ R Thigh
+    400052: DUCK_ R Toe0
+    400054: DUCK_ R Toe01
+    400056: DUCK_ R Toe02
+    400058: DUCK_ R UpperArm
+    400060: DUCK_ Spine
+    400062: DUCK_ Tail
+    400064: DUCK_ TailL
+    400066: DUCK_ TailR
+    7400000: Take 001
+    11100000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 0
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 2
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 1
+  additionalBone: 0
+  userData: 

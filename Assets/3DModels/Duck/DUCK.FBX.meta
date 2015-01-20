@@ -1,0 +1,133 @@
+fileFormatVersion: 2
+guid: 8e45344d7827cf840a203a1dfc78f01f
+ModelImporter:
+  serializedVersion: 16
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: DUCK
+    100004: DUCK_
+    100006: DUCK_ Head
+    100008: DUCK_ L Calf
+    100010: DUCK_ L Clavicle
+    100012: DUCK_ L Foot
+    100014: DUCK_ L Forearm
+    100016: DUCK_ L Hand
+    100018: DUCK_ L HorseLink
+    100020: DUCK_ L Thigh
+    100022: DUCK_ L Toe0
+    100024: DUCK_ L Toe01
+    100026: DUCK_ L Toe02
+    100028: DUCK_ L UpperArm
+    100030: DUCK_ Neck
+    100032: DUCK_ Neck1
+    100034: DUCK_ Neck2
+    100036: DUCK_ Pelvis
+    100038: DUCK_ Queue de cheval 1
+    100040: DUCK_ R Calf
+    100042: DUCK_ R Clavicle
+    100044: DUCK_ R Foot
+    100046: DUCK_ R Forearm
+    100048: DUCK_ R Hand
+    100050: DUCK_ R HorseLink
+    100052: DUCK_ R Thigh
+    100054: DUCK_ R Toe0
+    100056: DUCK_ R Toe01
+    100058: DUCK_ R Toe02
+    100060: DUCK_ R UpperArm
+    100062: DUCK_ Spine
+    100064: DUCK_ Tail
+    100066: DUCK_ TailL
+    100068: DUCK_ TailR
+    400000: //RootNode
+    400002: DUCK
+    400004: DUCK_
+    400006: DUCK_ Head
+    400008: DUCK_ L Calf
+    400010: DUCK_ L Clavicle
+    400012: DUCK_ L Foot
+    400014: DUCK_ L Forearm
+    400016: DUCK_ L Hand
+    400018: DUCK_ L HorseLink
+    400020: DUCK_ L Thigh
+    400022: DUCK_ L Toe0
+    400024: DUCK_ L Toe01
+    400026: DUCK_ L Toe02
+    400028: DUCK_ L UpperArm
+    400030: DUCK_ Neck
+    400032: DUCK_ Neck1
+    400034: DUCK_ Neck2
+    400036: DUCK_ Pelvis
+    400038: DUCK_ Queue de cheval 1
+    400040: DUCK_ R Calf
+    400042: DUCK_ R Clavicle
+    400044: DUCK_ R Foot
+    400046: DUCK_ R Forearm
+    400048: DUCK_ R Hand
+    400050: DUCK_ R HorseLink
+    400052: DUCK_ R Thigh
+    400054: DUCK_ R Toe0
+    400056: DUCK_ R Toe01
+    400058: DUCK_ R Toe02
+    400060: DUCK_ R UpperArm
+    400062: DUCK_ Spine
+    400064: DUCK_ Tail
+    400066: DUCK_ TailL
+    400068: DUCK_ TailR
+    4300000: DUCK
+    7400000: Take 001
+    11100000: //RootNode
+    13700000: DUCK
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 1
+  additionalBone: 0
+  userData: 
