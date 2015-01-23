@@ -14,13 +14,21 @@ public class Duck : MonoBehaviour {
     public float decisionTiming; //how often this sort of duck will update its decisions
     public float duckSpeed;
 
+    private bool isEscaping;
+    private bool isAscending; //false would be descending
+    private GameObject camera;
+
     public void Start()
     {
+        camera = GameObject.Find("Main Camera");
+        isAscending = true;
+        isEscaping = false;
         this.animation.Play("fly");
         startTime = Time.time;
         lastActionTime = startTime;
-        //this.renderer.material.color = duckColor;
-        //this.transform.rotation = Random.rotation;
+        Renderer thisRenderer = this.GetComponentInChildren<Renderer>();
+        thisRenderer.material.color = duckColor;
+        setNewDirection();
     }
 
     public void Update()
@@ -30,27 +38,80 @@ public class Duck : MonoBehaviour {
         //We can escape (if the elapsed time is past the threshold)
         //We can change course
 
-        if (Time.time > (startTime + escapeTime))
+        //Get the duck's position within the viewport
+        //the bottom-left of the camera is (0,0); the top-right is (1,1)
+        Vector3 vPoint = camera.camera.WorldToViewportPoint(transform.position);
+
+        //Make sure the duck has not gone off the left or right of the screen
+        if (vPoint.x < 0.08)
         {
-            Debug.Log("Escape!");
-            //must update GUI to show that the duck got away. A signal of some sort must be sent here.
-            this.animation.Stop();
-            DestroyObject(this); //DIE! DIE! DIE!
+            setNewDirection(200f, 250f);
         }
 
-        //time to contemplate a decision now
-        if (Time.time > (lastActionTime + decisionTiming))
+        if (vPoint.x > 0.92)
+        {
+            setNewDirection(50f, 130f);
+        }
+
+
+        //Also don't let duck leave top of screen unless it is escaping
+        if (vPoint.y > 0.90 && !isEscaping)
+        {
+            isAscending = false; //got to go down!
+            setNewDirection();
+        }
+
+
+        if (Time.time > (startTime + escapeTime) && !isEscaping)
+        {
+            Debug.Log("Escape!");
+            isEscaping = true; //inhibits calling this code more than once
+            //this is a pretty stiff incline upward
+            this.transform.rotation = Quaternion.Euler(new Vector3(-50f, Random.Range(0, 360), 0));
+            duckSpeed = 50; //FAST!
+            //must update GUI to show that the duck got away. A signal of some sort must be sent here.
+        }
+
+        if (Time.time > (startTime + escapeTime + 2)) //trust me... the escape wont take long.
+        {
+            this.animation.Stop();
+            DestroyObject(this.gameObject); //DIE! DIE! DIE!
+        }
+
+        //time to contemplate a decision now so long as we're not making a break for it
+        if (Time.time > (lastActionTime + decisionTiming) && !isEscaping)
         {
             Debug.Log("Decision");
             lastActionTime = Time.time;
-            //this.transform.rotation = Random.rotation;
+            if (Random.value > 0.5f)
+            {
+                isAscending = false;
+                Debug.Log("Going Down!");
+            }
+            else
+            {
+                isAscending = true;
+                Debug.Log("Headin' Up!");
+            }
+            setNewDirection();
         }
 
         //finally, if we got here then try to move in the current direction
-        //Debug.Log(transform.rotation.eulerAngles.ToString());
+        transform.Translate(Vector3.forward * Time.deltaTime * duckSpeed);
+    }
 
-        Vector3 movement = this.transform.rotation.eulerAngles;
-        movement.z += 270;
-        //this.transform.position += movement * Time.deltaTime * duckSpeed * 0.001f;
+    private void setNewDirection(float starty = 0f, float endy = 360f)
+    {
+        if (isAscending) transform.rotation = Quaternion.Euler(new Vector3(Random.Range(-40f, -10f), Random.Range(starty, endy), 0));
+        else transform.rotation = Quaternion.Euler(new Vector3(Random.Range(10f, 40f), Random.Range(0, 360), 0));
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        Debug.Log(other.name);
+        //if the duck hit a trigger it probably means we hit the ground or lake so make sure to go up!
+        isAscending = true;
+        //and recalculate path
+        setNewDirection();
     }
 }
