@@ -28,7 +28,7 @@ public class TestObject : MonoBehaviour {
         }
         if (Input.GetKeyUp(KeyCode.V)) //spawn a decoy
         {
-        }
 
+        }
 	}
 }
