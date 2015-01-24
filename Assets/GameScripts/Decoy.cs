@@ -37,4 +37,14 @@ public class Decoy : MonoBehaviour {
             Destroy(gameObject); //bye!
         }
 	}
+
+    //some explantion for why this is an on trigger that then turns off isTrigger. We trigger once
+    //to get the splash sound but leaving it as a trigger allows it to fall right through the lake
+    //so turning isTrigger off lets it stay on the lake after the initial sound effect.
+    public void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Splash!");
+        audio.Play(); //play our plop sound when we hit the water.
+        rigidbody.collider.isTrigger = false;
+    }
 }
