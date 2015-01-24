@@ -5,6 +5,8 @@ public class Decoy : MonoBehaviour {
 
     private GameObject player;
     private bool didPush;
+    private float startTime;
+    public float decoyLife; //how long do decoys last?
 
 	// Use this for initialization
 	void Start () {
@@ -14,7 +16,8 @@ public class Decoy : MonoBehaviour {
         Vector3 forwardplayer = player.transform.forward;
         decoyPos += (forwardplayer * 2); //start decoy just a short distance in front of the player.
         decoyPos.y -= 1; //also down a bit so it appears that the player threw it from their hands
-        transform.position = decoyPos;        
+        transform.position = decoyPos;
+        startTime = Time.time;
 	}
 	
 	// Update is called once per frame
@@ -28,6 +31,10 @@ public class Decoy : MonoBehaviour {
             forceDecoy.y += 400; //add some upward motion too.
             rigidbody.AddForce(forceDecoy);
             didPush = true; //no mo' shoving
+        }
+        if (Time.time > (startTime + decoyLife))
+        {
+            Destroy(gameObject); //bye!
         }
 	}
 }

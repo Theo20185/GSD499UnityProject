@@ -51,12 +51,14 @@ public class Duck : MonoBehaviour {
         //Make sure the duck has not gone off the left or right of the screen
         if (vPoint.x < 0.08)
         {
-            setNewDirection(200f, 250f);
+            //setNewDirection(200f, 250f);
+            reflectDirection();
         }
 
         if (vPoint.x > 0.92)
         {
-            setNewDirection(50f, 130f);
+            //setNewDirection(50f, 130f);
+            reflectDirection();
         }
 
 
@@ -113,6 +115,15 @@ public class Duck : MonoBehaviour {
         if (isAscending) transform.rotation = Quaternion.Euler(new Vector3(Random.Range(-40f, -10f), Random.Range(starty, endy), 0));
         else transform.rotation = Quaternion.Euler(new Vector3(Random.Range(10f, 40f), Random.Range(0, 360), 0));
     }
+
+    //used when we hit edge of screen. A rotation of 180 degrees in Y turns us around.
+    private void reflectDirection()
+    {
+        Vector3 oldDirection = transform.rotation.eulerAngles;
+        oldDirection.y += 180;
+        transform.rotation = Quaternion.Euler(oldDirection);
+    }
+
 
     public void OnTriggerEnter(Collider other)
     {
