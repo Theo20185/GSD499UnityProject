@@ -1,12 +1,18 @@
 private var motor : CharacterMotor;
+public var controlEnabled : boolean = true;
 
 // Use this for initialization
-function Awake () {
+function Awake () 
+{
 	motor = GetComponent(CharacterMotor);
 }
 
 // Update is called once per frame
-function Update () {
+function Update () 
+{
+	if (!controlEnabled)
+		return;
+	
 	// Get the input vector from keyboard or analog stick
 	var directionVector = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 	
@@ -30,6 +36,16 @@ function Update () {
 	// Apply the direction to the CharacterMotor
 	motor.inputMoveDirection = transform.rotation * directionVector;
 	motor.inputJump = Input.GetButton("Jump");
+}
+
+public function EnableControl()
+{
+	controlEnabled = true;
+}
+
+public function DisableControl()
+{
+	controlEnabled = false;
 }
 
 // Require a character controller to be attached to the same game object
