@@ -17,9 +17,15 @@ public class Duck : MonoBehaviour {
     private bool isEscaping;
     private bool isAscending; //false would be descending
     private GameObject camera;
+    private AudioSource[] sounds;
+    private AudioSource flapping;
+    private AudioSource quack;
 
     public void Start()
     {
+        sounds = GetComponents<AudioSource>();
+        flapping = sounds[0];
+        quack = sounds[1];
         camera = GameObject.Find("Main Camera");
         isAscending = true;
         isEscaping = false;
@@ -69,6 +75,7 @@ public class Duck : MonoBehaviour {
             //this is a pretty stiff incline upward
             this.transform.rotation = Quaternion.Euler(new Vector3(-50f, Random.Range(0, 360), 0));
             duckSpeed = 50; //FAST!
+            quack.Play();
             //must update GUI to show that the duck got away. A signal of some sort must be sent here.
         }
 
@@ -81,6 +88,7 @@ public class Duck : MonoBehaviour {
         //time to contemplate a decision now so long as we're not making a break for it
         if (Time.time > (lastActionTime + decisionTiming) && !isEscaping)
         {
+            quack.Play();
             Debug.Log("Decision");
             lastActionTime = Time.time;
             if (Random.value > 0.5f)
