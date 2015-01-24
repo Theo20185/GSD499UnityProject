@@ -3,9 +3,13 @@ using System.Collections;
 
 //temporarry object that allows for doing stuff as a test
 public class TestObject : MonoBehaviour {
+    public Transform player;
+    public Transform duckcallPrefab; 
+    public Transform decoyPrefab;
     public Transform duckPrefab;
     public Transform spawnBasis;
     public Vector3 spawnSpan;
+    
 
 	// Use this for initialization
 	void Start () {
@@ -24,11 +28,13 @@ public class TestObject : MonoBehaviour {
         }
         if (Input.GetKeyUp(KeyCode.C)) //spawn a duck call
         {
-
+            //no need to set position or rotation.
+            Instantiate(duckcallPrefab, Vector3.zero, Quaternion.identity);
         }
         if (Input.GetKeyUp(KeyCode.V)) //spawn a decoy
         {
+            //The decoy can be instantiated without needing to worry about rotation or position. Its scripts handle it all
+            Instantiate(decoyPrefab, Vector3.zero, Quaternion.identity);
         }
-
 	}
 }
