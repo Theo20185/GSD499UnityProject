@@ -69,8 +69,9 @@ public class EventManager : MonoBehaviour
 	{        
 		Vector3 fpcPosition = firstPersonController.GetComponent<Transform> ().position;
         Vector3 delta = fpcPosition - shootingPosition.position;
+        float magnitude = (delta.x * delta.x) + (delta.z * delta.z);
 
-		if (delta.sqrMagnitude > 0.04f)
+		if (magnitude > 0.04f)
 		{
 			//Move the camera to look at the Focus target.
 			mainCamera.transform.LookAt (duckSpawn.position);

@@ -9,6 +9,9 @@ public class HuntingBlind : MonoBehaviour {
     public Transform spawnPoint;
     public Transform shootPoint;
 
+    private float startTime;
+    private bool isHidden = false;
+
 	// Use this for initialization
 	void Start () {
         Renderer thisRenderer = this.GetComponentInChildren<Renderer>();
@@ -29,7 +32,14 @@ public class HuntingBlind : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        if ((Time.time > startTime + 10f) && isHidden)
+        {
+            //reenable collider and renderer once the player is in the event.
+            //This way the player can trigger it again later if they want
+            isHidden = false;
+            collider.enabled = true; 
+            renderer.enabled = true;
+        }
 	}
 
     void OnTriggerEnter(Collider other)
@@ -37,6 +47,9 @@ public class HuntingBlind : MonoBehaviour {
         //if player hit this hunting blind then start an event!
         if (other.name == "First Person Controller")
         {
+            collider.enabled = false; //turn it off while in event;
+            renderer.enabled = false; //turn off gfx for tent too
+            isHidden = true;
             if (tentType < 2)
                 eventManager.TriggerEvent(shootPoint, spawnPoint, 10, 5, true);
             else
