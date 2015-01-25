@@ -4,6 +4,7 @@ using System.Collections;
 //Script to manage the shooting event.
 //Use TriggerEvent to begin a shooting event. This should be called upon collision with an event hotspot. TestObject has a hotkey of E assigned to test event functionality on Lake 1.
 //Once an event is triggered, the event should take care of itself. Based on the results, the control will either be returned to the player or the game will enter "Game Over" mode.
+using System.Collections.Generic;
 
 public class EventManager : MonoBehaviour 
 {
@@ -16,6 +17,8 @@ public class EventManager : MonoBehaviour
 	public GUIText countdownTimer;
 	public GUITexture crosshair;
 	public GUITexture shotgunShell;
+	public GUITexture trophy;
+	public GUITexture deadDuck;
 
 	//Flags for different stages of events.
 	private enum EventStage
@@ -31,8 +34,10 @@ public class EventManager : MonoBehaviour
 	private int targetsShot;
 	private int targetsSpawned;
 	private bool targetsInPlay;
-	private int shells;
+	private List<Transform> targetsInPlayList;
 
+	private int shells;
+	
 	// Use this for initialization
 	public void Start () 
 	{
@@ -55,9 +60,8 @@ public class EventManager : MonoBehaviour
 
 	public void OnGUI()
 	{
-		if (stage == EventStage.EventActive)
+		if (stage == EventStage.CountdownToEvent || stage == EventStage.EventActive)
 			UpdateEventOnGUI ();
-
 	}
 
 	public void TriggerEvent(Transform shootingPosition, Transform duckSpawn)
@@ -176,9 +180,13 @@ public class EventManager : MonoBehaviour
 		GUI.DrawTexture (new Rect (x, y, crosshair.texture.width, crosshair.texture.height), crosshair.texture);
 
 		for (int guiShellsIndex = 0; guiShellsIndex < shells; guiShellsIndex++)
-		{
 			GUI.DrawTexture (new Rect(10 + (guiShellsIndex * 50), Screen.height - 110, shotgunShell.texture.width, shotgunShell.texture.height), shotgunShell.texture);
-		}
+
+		GUI.DrawTexture (new Rect((Screen.width / 2) - (deadDuck.texture.width / 2) - 55, Screen.height - 110, deadDuck.texture.width, deadDuck.texture.height), deadDuck.texture);
+		GUI.TextArea (new Rect ((Screen.width / 2) - (deadDuck.texture.width / 2) - 55, Screen.height - 110, deadDuck.texture.width, deadDuck.texture.height), targetsShot.ToString ("N0"));
+
+		GUI.DrawTexture (new Rect((Screen.width / 2) + (trophy.texture.width / 2) + 55, Screen.height - 110, trophy.texture.width, trophy.texture.height), trophy.texture);
+		GUI.TextArea (new Rect ((Screen.width / 2) + (trophy.texture.width / 2) + 55, Screen.height - 110, trophy.texture.width, trophy.texture.height), targetSpawn.GetComponent<TargetSpawn> ().targetsNeeded.ToString ("N0"));
 	}
 
 	private void ShowResults()
@@ -200,6 +208,7 @@ public class EventManager : MonoBehaviour
 	private void SpawnTargets()
 	{
 		targetsInPlay = true;
+		targetsInPlayList = new List<Transform> ();
 
 		for (int targets = 0; targets < targetSpawn.GetComponent<TargetSpawn>().targetsPerSpawn; targets++) 
 		{
@@ -216,6 +225,8 @@ public class EventManager : MonoBehaviour
 			float z = targetSpawn.GetComponent<TargetSpawn> ().transform.position.z + (float)Random.Range (0, 2 * targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.z - targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.z);
 
 			Instantiate (target, new Vector3 (x, y, z), Quaternion.identity);
+
+			targetsInPlayList.Add (target);
 		}
 	}
 }
