@@ -5,9 +5,6 @@ using System.Collections;
 //Instantiate duck objects and they'll take care of themselves
 //DO NOT INSTANTIATE DUCKS OFF OF THE SCREEN. DONT DO IT! I MEAN IT!
 
-//This code immediately changes direction vectors which makes the duck motion
-//kind of jerky. In the future it should use smooth interpolation
-
 public class Duck : MonoBehaviour {
     //these next three can be modified to change the difficulty of this duck type.
     public Color duckColor; //red, green, black, white, doesn't matter. God loves them all the same.
@@ -43,6 +40,7 @@ public class Duck : MonoBehaviour {
     private GameObject decoy;
 
     private Quaternion targetVector; //the travel vector we want to achieve.
+    private Vector3 originalPos; //our starting point
 
     public void Start()
     {
@@ -56,6 +54,7 @@ public class Duck : MonoBehaviour {
         startTime = Time.time;
         lastActionTime = startTime;
         inhibitTime = Time.time - 1.0f;
+        originalPos = transform.position;
         Renderer thisRenderer = this.GetComponentInChildren<Renderer>();
         thisRenderer.material.color = duckColor;
         setNewDirection(true); //immediately set direction with no interpolation
@@ -95,35 +94,37 @@ public class Duck : MonoBehaviour {
 
         //Make sure the duck has not gone off the left or right of the screen
         //these are a bit before the edge of the screen so that the duck has time to turn around
-        if (vPoint.x < 0.12)
+        if (vPoint.x < 0.075)
         {
             Debug.Log("Hit left edge of screen");
-            reflectDirection();            
+            targetOriginalPos();           
         }
 
-        if (vPoint.x > 0.88)
+        if (vPoint.x > 0.925)
         {
             Debug.Log("Hit right edge of screen");
-            reflectDirection();
+            targetOriginalPos();
         }
 
+        //distance of duck from camera
+        //Debug.Log(vPoint.z.ToString());
+        if (vPoint.z < 20f)
+        {            
+            Debug.Log("Too close to player");
+            //targetOriginalPos();
+            setNewDirection();
+        }
 
         //Also don't let duck leave top of screen unless it is escaping
-        if ((vPoint.y > 0.80 || distanceToGround > 20.0f) && !isEscaping)
+        if ((vPoint.y > 0.90 || distanceToGround > 20.0f) && !isEscaping)
         {
             Debug.Log("Duck is too high");
-            isAscending = false; //got to go down!
-            setNewDirection();
+            //isAscending = false; //got to go down!
+            //setNewDirection();
+            targetOriginalPos();
             inhibitTime = Time.time + 1.0f;
         }
 
-        if (distanceToGround < 2.0f)
-        {
-            Debug.Log("Duck is too low");
-            isAscending = true; //must pull up
-            setNewDirection();
-            inhibitTime = Time.time + 1.0f;
-        }
 
         //Escape if it is time, we're not already escaping, and there are no decoys
         if (Time.time > (startTime + escapeTime) && !isEscaping && (decoy == null))
@@ -203,6 +204,13 @@ public class Duck : MonoBehaviour {
         inhibitTime = Time.time + 1.0f;
     }
 
+    private void targetOriginalPos()
+    {
+        Quaternion temp = transform.rotation; //remember current rotation                            
+        transform.LookAt(originalPos); //calculate a new one to look at decoy
+        targetVector = transform.rotation; //store that as our target
+        transform.rotation = temp; //restore current rotation
+    }
 
     public void OnTriggerEnter(Collider other)
     {
