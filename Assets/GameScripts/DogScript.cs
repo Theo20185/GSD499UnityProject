@@ -3,6 +3,7 @@ using System.Collections;
 
 public class DogScript : MonoBehaviour {
 
+	public GameObject firstPersonController;
 	public AudioClip dogSingleBark;
 	public AudioClip dogBark;
 	public AudioClip dogLaughter;
@@ -10,7 +11,7 @@ public class DogScript : MonoBehaviour {
 	private Transform target;			//final target to travel to
 	private float travelSpeed;			//final travel speed
 	private float walkingSpeed = 1.5f;	//set walking speed
-	private float runningSpeed = 5.0f;	//set running speed
+	private float runningSpeed = 7.0f;	//set running speed
 
 	private bool dogWalking = false;	//true if dog is to walk
 	private bool dogRunning = false;	//true if dog is to run
@@ -24,16 +25,32 @@ public class DogScript : MonoBehaviour {
 	private GameObject temp1;
 	private GameObject temp2;
 	private GameObject temp3;
+	private GameObject temp4;
+	private GameObject temp5;
+	private GameObject temp6;
+
+	public int nextStage = 1;	//need to change to one when done
+	private bool moveToNextSpot = false;
 
 	// Use this for initialization
 	void Start () {
-		temp1 = GameObject.Find ("CubeTarget1");
-		temp2 = GameObject.Find ("CubeTarget2");
-		temp3 = GameObject.Find ("CubeTarget3");
+		temp1 = GameObject.Find ("DogTarget1");
+		temp2 = GameObject.Find ("DogTarget2");
+		temp3 = GameObject.Find ("DogTarget3");
+		temp4 = GameObject.Find ("DogTarget4");
+		temp5 = GameObject.Find ("DogTarget5");
+		temp6 = GameObject.Find ("DogTarget6");
+
+		StartCoroutine(startDog ());
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+		if (Input.GetKeyDown ("h")) {
+			nextStage++;
+			moveToNextSpot = true;
+		}
 		
 		if (Input.GetKeyDown ("t")) {
 			dogWalk (temp1);
@@ -51,6 +68,39 @@ public class DogScript : MonoBehaviour {
 			dogLaugh ();
 		}
 
+		if (moveToNextSpot) {
+				switch (nextStage) {
+				case 1:
+						dogRun (temp1);
+						moveToNextSpot = false;
+						break;
+				case 2:
+						dogRun (temp2);
+						moveToNextSpot = false;
+						break;
+				case 3:
+						dogRun (temp3);
+						moveToNextSpot = false;
+						nextStage = 99;
+						break;
+				case 4:
+						dogRun (temp4);
+						moveToNextSpot = false;
+						nextStage = 99;
+						break;
+				case 5:
+						dogRun (temp5);
+						moveToNextSpot = false;
+						nextStage = 99;
+						break;
+				case 6:
+						dogRun (temp6);
+						moveToNextSpot = false;
+						nextStage = 99;
+						break;
+				}
+		}
+
 		if (!dogWalking && !dogRunning && !dogJumping && !dogLaughing) {
 				animation.Play ("Idled");
 		} else {
@@ -66,8 +116,8 @@ public class DogScript : MonoBehaviour {
 			transform.position = Vector3.MoveTowards (transform.position, target.position, step);
 			animation.Play ("Walk", PlayMode.StopAll);
 			if(transform.position == target.position){
-				dogWalking = false;
 				//print ("reached target");
+				dogWalking = false;
 			}
 		}
 
@@ -125,6 +175,13 @@ public class DogScript : MonoBehaviour {
 		timeSet = Time.time;
 		dogLaughing = true;
 		StartCoroutine (playLaugh ());
+	}
+	
+	IEnumerator startDog(){
+		dogWalk (firstPersonController);
+		yield return new WaitForSeconds (2f);
+		dogWalking = false;
+		moveToNextSpot = true;
 	}
 
 	IEnumerator playSingleBark(){
