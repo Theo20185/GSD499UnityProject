@@ -11,7 +11,11 @@ function Awake ()
 function Update () 
 {
 	if (!controlEnabled)
+	{
+		motor.canControl = false;
+		//motor.Sliding.enabled = false;
 		return;
+	}
 	
 	// Get the input vector from keyboard or analog stick
 	var directionVector = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
@@ -34,6 +38,7 @@ function Update ()
 	}
 	
 	// Apply the direction to the CharacterMotor
+	motor.canControl = true;
 	motor.inputMoveDirection = transform.rotation * directionVector;
 	motor.inputJump = Input.GetButton("Jump");
 }
