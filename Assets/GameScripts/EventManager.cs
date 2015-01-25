@@ -10,8 +10,11 @@ public class EventManager : MonoBehaviour
 	public float maxSpeed;
 	public GameObject firstPersonController;
 	public GameObject mainCamera;
+	public Transform duckPrefabEasy;
+	public Transform duckPrefabHard;
 	public GUIText countdownTimer;
 	public GUITexture crosshair;
+	public GUITexture shotgunShell;
 
 	//Flags for different stages of events.
 	private enum EventStage
@@ -24,6 +27,9 @@ public class EventManager : MonoBehaviour
 	private Transform shootingPosition;
 	private Transform duckSpawn;
 	private float countdown;
+	private int targetsShot;
+	private int targetsSpawned;
+	private int shells;
 
 	// Use this for initialization
 	public void Start () 
@@ -50,11 +56,13 @@ public class EventManager : MonoBehaviour
 
 	}
 
-	public void TriggerEvent(Transform shootingPosition, Transform duckSpawn, int ducksSpawned = 10, int ducksNeeded = 5, bool useEasyDucks = true)
+	public void TriggerEvent(Transform shootingPosition, Transform duckSpawn)
 	{
 		this.shootingPosition = shootingPosition;
 		this.duckSpawn = duckSpawn;
-	
+		targetsShot = 0;
+		targetsSpawned = 0;
+
 		InitializeTransitionIn ();
 	}
 
@@ -90,7 +98,8 @@ public class EventManager : MonoBehaviour
 	{
 		firstPersonController.GetComponent<CharacterController> ().SimpleMove (Vector3.zero);
 		countdownTimer.enabled = true;
-		countdown = 3.5f;
+		countdown = 3f;
+		shells = 3;
 		stage = EventStage.CountdownToEvent;
 	}
 
@@ -118,6 +127,11 @@ public class EventManager : MonoBehaviour
 		float x = Input.mousePosition.x - (crosshair.texture.width / 2);
 		float y = Screen.height - Input.mousePosition.y - (crosshair.texture.height / 2);
 		GUI.DrawTexture (new Rect (x, y, crosshair.texture.width, crosshair.texture.height), crosshair.texture);
+
+		for (int guiShellsIndex = 0; guiShellsIndex < shells; guiShellsIndex++)
+		{
+			GUI.DrawTexture (new Rect(10 + (guiShellsIndex * 50), Screen.height - 110, shotgunShell.texture.width, shotgunShell.texture.height), shotgunShell.texture);
+		}
 	}
 
 	private void ShowResults()
