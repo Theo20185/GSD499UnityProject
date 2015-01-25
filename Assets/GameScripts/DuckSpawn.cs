@@ -5,14 +5,12 @@ public class DuckSpawn : MonoBehaviour
 {
 	public enum DuckType
 	{
-		Easy, Hard
+		Easy, Hard, Clay
 	}
 
 	public int ducksNeeded;
 	public DuckType duckType;
-	public int spawnTime;
+	public int escapeTime;
 	public int ducksPerSpawn;
-	public int spawnSpanX;
-	public int spawnSpanY;
-	public int spawnSpanZ;
+	public Vector3 spawnSpan;
 }
