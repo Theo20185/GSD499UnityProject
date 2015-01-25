@@ -11,6 +11,8 @@ public class EventManager : MonoBehaviour
 	public float maxSpeed;
 	public GameObject firstPersonController;
 	public GameObject mainCamera;
+	public GameObject shotgun;
+	public GameObject emptyGun;
 	public Transform duckPrefabEasy;
 	public Transform duckPrefabHard;
 	public GUIText requirements;
@@ -171,6 +173,9 @@ public class EventManager : MonoBehaviour
 
 		if (timer <= 0 && targetsInPlay == false)
 			SpawnTargets ();
+
+		if (Input.GetMouseButtonDown (0))
+			FireGun ();
 	}
 
 	private void UpdateEventOnGUI()
@@ -227,6 +232,20 @@ public class EventManager : MonoBehaviour
 			Instantiate (target, new Vector3 (x, y, z), Quaternion.identity);
 
 			targetsInPlayList.Add (target);
+		}
+	}
+
+	private void FireGun()
+	{
+		if (shells > 0) 
+		{
+			Debug.Log ("Fire!");
+			shotgun.audio.Play ();
+			shells--;
+		} 
+		else 
+		{
+			emptyGun.audio.Play ();
 		}
 	}
 }
