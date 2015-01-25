@@ -43,6 +43,7 @@ public class EventManager : MonoBehaviour
 	// Use this for initialization
 	public void Start () 
 	{
+		targetsInPlayList = new List<Transform> ();
 	}
 	
 	// Update is called once per frame
@@ -174,6 +175,22 @@ public class EventManager : MonoBehaviour
 		if (timer <= 0 && targetsInPlay == false)
 			SpawnTargets ();
 
+		for (int targetsInPlayIndex = 0; targetsInPlayIndex < targetsInPlayList.Count; targetsInPlayIndex++) 
+		{
+			if (targetsInPlayList [targetsInPlayIndex] == null)
+			{
+				Debug.Log ("Target at index " + targetsInPlayIndex + " has been destroyed.");
+				targetsInPlayList.RemoveAt (targetsInPlayIndex);
+			}
+			else
+				Debug.Log (targetsInPlayList [targetsInPlayIndex].name + " is in play.");
+		}
+
+		if (targetsInPlayList.Count == 0 && targetsInPlay == true) 
+		{
+			InitializeCountdownToEvent ();
+		}
+
 		if (Input.GetMouseButtonDown (0))
 			FireGun ();
 	}
@@ -229,10 +246,11 @@ public class EventManager : MonoBehaviour
 			float y = targetSpawn.GetComponent<TargetSpawn> ().transform.position.y + (float)Random.Range (0, 2 * targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.y - targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.y);
 			float z = targetSpawn.GetComponent<TargetSpawn> ().transform.position.z + (float)Random.Range (0, 2 * targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.z - targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.z);
 
-			Instantiate (target, new Vector3 (x, y, z), Quaternion.identity);
-
-			targetsInPlayList.Add (target);
+			targetsInPlayList.Add (Instantiate (target, new Vector3 (x, y, z), Quaternion.identity) as Transform);
 		}
+
+		for (int targetsInPlayIndex = 0; targetsInPlayIndex < targetsInPlayList.Count; targetsInPlayIndex++) 
+			targetsInPlayList [targetsInPlayIndex].name = targetsInPlayList [targetsInPlayIndex].name + targetsInPlayIndex.ToString ();
 	}
 
 	private void FireGun()
@@ -240,11 +258,32 @@ public class EventManager : MonoBehaviour
 		if (shells > 0) 
 		{
 			Debug.Log ("Fire!");
+
 			shotgun.audio.Play ();
 			shells--;
+
+			Ray ray = mainCamera.camera.ScreenPointToRay (Input.mousePosition);
+			RaycastHit hit;
+
+			if (Physics.Raycast (ray, out hit))
+			{
+				Debug.Log (hit.transform.name + " is hit!");
+
+				for (int targetsInPlayIndex = 0; targetsInPlayIndex < targetsInPlayList.Count; targetsInPlayIndex++)
+				{
+					if (hit.transform.name == targetsInPlayList[targetsInPlayIndex].name && targetsInPlayList[targetsInPlayIndex].GetComponent<Duck>().IsDead == false)
+					{
+						targetsInPlayList[targetsInPlayIndex].GetComponent<Duck>().Die ();
+						targetsShot++;
+					}
+				}
+			}
+			else
+				Debug.Log ("Nothing hit!");
 		} 
 		else 
 		{
+			Debug.Log ("Out of shells!");
 			emptyGun.audio.Play ();
 		}
 	}

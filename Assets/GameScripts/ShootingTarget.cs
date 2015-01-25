@@ -259,4 +259,9 @@ public class ShootingTarget : MonoBehaviour {
         }
     }
 
+	public bool IsDead
+	{
+		get { return isDead; }
+	}
+
 }
