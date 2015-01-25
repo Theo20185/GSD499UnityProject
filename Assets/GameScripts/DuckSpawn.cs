@@ -12,5 +12,6 @@ public class DuckSpawn : MonoBehaviour
 	public DuckType duckType;
 	public int escapeTime;
 	public int ducksPerSpawn;
+	public int spawnRounds;
 	public Vector3 spawnSpan;
 }
