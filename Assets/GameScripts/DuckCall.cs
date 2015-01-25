@@ -16,7 +16,7 @@ public class DuckCall : MonoBehaviour {
         callPos += (forwardplayer * 1.0f); //start decoy just a short distance in front of the player.
         callPos.y += 0.6f;
         transform.position = callPos;
-        transform.rotation = Quaternion.Euler(0f, 0f, -80f); //model came in a bit rotated this is the lazy way to fix that
+        transform.rotation = Quaternion.Euler(0f, -90f, -80f); //model came in a bit rotated this is the lazy way to fix that
         startTime = Time.time;
         audio.Play();
     }   

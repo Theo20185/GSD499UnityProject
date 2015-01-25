@@ -51,9 +51,9 @@ public class HuntingBlind : MonoBehaviour {
             renderer.enabled = false; //turn off gfx for tent too
             isHidden = true;
             if (tentType < 2)
-                eventManager.TriggerEvent(shootPoint, spawnPoint, 10, 5, true);
+                eventManager.TriggerEvent(shootPoint, spawnPoint);
             else
-                eventManager.TriggerEvent(shootPoint, spawnPoint, 10, 7, false);
+                eventManager.TriggerEvent(shootPoint, spawnPoint);
         }
     }
 }
