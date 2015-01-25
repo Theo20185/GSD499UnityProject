@@ -85,8 +85,7 @@ public class EventManager : MonoBehaviour
 
 		if (magnitude > 0.04f) 
 		{
-			//Move the camera to look at the Focus target.
-			mainCamera.transform.LookAt (targetSpawn.position);
+			//Move the FPC to look at the Focus target.
 		    firstPersonController.transform.LookAt (targetSpawn.position);
 
 			//Move the player to specified shooting position.
