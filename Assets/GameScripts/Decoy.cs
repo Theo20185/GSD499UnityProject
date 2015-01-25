@@ -17,6 +17,7 @@ public class Decoy : MonoBehaviour {
         decoyPos += (forwardplayer * 2); //start decoy just a short distance in front of the player.
         decoyPos.y -= 1; //also down a bit so it appears that the player threw it from their hands
         transform.position = decoyPos;
+        transform.rotation = Quaternion.Euler(-90f, 0f, 0f);
         startTime = Time.time;
 	}
 	
