@@ -5,7 +5,7 @@ using System.Collections;
 //Instantiate duck objects and they'll take care of themselves
 //DO NOT INSTANTIATE DUCKS OFF OF THE SCREEN. DONT DO IT! I MEAN IT!
 
-public class Duck : MonoBehaviour {
+public class ShootingTarget : MonoBehaviour {
     //these next three can be modified to change the difficulty of this duck type.
     public Color duckColor; //red, green, black, white, doesn't matter. God loves them all the same.
     public float escapeTime; //how long will duck fly around before escaping?
@@ -111,8 +111,8 @@ public class Duck : MonoBehaviour {
         if (vPoint.z < 20f)
         {            
             Debug.Log("Too close to player");
-            //targetOriginalPos();
-            setNewDirection();
+            targetOriginalPos();
+            //setNewDirection();
         }
 
         //Also don't let duck leave top of screen unless it is escaping

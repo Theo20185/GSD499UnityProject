@@ -248,7 +248,7 @@ public class EventManager : MonoBehaviour
 				target = duckPrefabHard;
 			//TODO: Set target to Clay object if the spawn is for Clays.
 
-			target.GetComponent<Duck> ().escapeTime = targetSpawn.GetComponent<TargetSpawn> ().escapeTime;
+			target.GetComponent<ShootingTarget> ().escapeTime = targetSpawn.GetComponent<TargetSpawn> ().escapeTime;
 
 			float x = targetSpawn.GetComponent<TargetSpawn> ().transform.position.x + (float)Random.Range (0, 2 * targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.x - targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.x);
 			float y = targetSpawn.GetComponent<TargetSpawn> ().transform.position.y + (float)Random.Range (0, 2 * targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.y - targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.y);
