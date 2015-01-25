@@ -13,7 +13,6 @@ function Update ()
 	if (!controlEnabled)
 	{
 		motor.canControl = false;
-		//motor.Sliding.enabled = false;
 		return;
 	}
 	
