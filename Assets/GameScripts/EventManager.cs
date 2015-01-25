@@ -33,8 +33,8 @@ public class EventManager : MonoBehaviour
 	private Transform shootingPosition;
 	private Transform targetSpawn;
 	private float timer;
+	private int roundNumber;
 	private int targetsShot;
-	private int targetsSpawned;
 	private bool targetsInPlay;
 	private List<Transform> targetsInPlayList;
 
@@ -72,7 +72,7 @@ public class EventManager : MonoBehaviour
 		this.shootingPosition = shootingPosition;
 		this.targetSpawn = duckSpawn;
 		targetsShot = 0;
-		targetsSpawned = 0;
+		roundNumber = 0;
 
 		InitializeTransitionIn ();
 	}
@@ -144,6 +144,7 @@ public class EventManager : MonoBehaviour
 	
 	private void InitializeCountdownToEvent()
 	{
+		roundNumber++;
 		requirements.enabled = false;
 		countdownTimer.enabled = true;
 		timer = 3f;
@@ -154,7 +155,7 @@ public class EventManager : MonoBehaviour
 	private void CountDownToEvent()
 	{
 		timer = timer - Time.deltaTime;
-		countdownTimer.text = timer > 0 ? timer.ToString ("N2") : "GO!";
+		countdownTimer.text = timer > 0 ? "Round " + roundNumber + "\n" + timer.ToString ("N2") : "Round " + roundNumber + "\nGO!";
 
 		if (timer < -2)
 			InitializeUpdateEvent ();
@@ -175,6 +176,9 @@ public class EventManager : MonoBehaviour
 		if (timer <= 0 && targetsInPlay == false)
 			SpawnTargets ();
 
+		if (Input.GetMouseButtonDown (0))
+			FireGun ();
+
 		for (int targetsInPlayIndex = 0; targetsInPlayIndex < targetsInPlayList.Count; targetsInPlayIndex++) 
 		{
 			if (targetsInPlayList [targetsInPlayIndex] == null)
@@ -188,11 +192,11 @@ public class EventManager : MonoBehaviour
 
 		if (targetsInPlayList.Count == 0 && targetsInPlay == true) 
 		{
-			InitializeCountdownToEvent ();
+			if (roundNumber == targetSpawn.GetComponent<TargetSpawn>().spawnRounds)
+				InitializeShowResults ();
+			else
+				InitializeCountdownToEvent ();
 		}
-
-		if (Input.GetMouseButtonDown (0))
-			FireGun ();
 	}
 
 	private void UpdateEventOnGUI()
@@ -209,6 +213,10 @@ public class EventManager : MonoBehaviour
 
 		GUI.DrawTexture (new Rect((Screen.width / 2) + (trophy.texture.width / 2) + 55, Screen.height - 110, trophy.texture.width, trophy.texture.height), trophy.texture);
 		GUI.TextArea (new Rect ((Screen.width / 2) + (trophy.texture.width / 2) + 55, Screen.height - 110, trophy.texture.width, trophy.texture.height), targetSpawn.GetComponent<TargetSpawn> ().targetsNeeded.ToString ("N0"));
+	}
+
+	private void InitializeShowResults()
+	{
 	}
 
 	private void ShowResults()
