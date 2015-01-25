@@ -271,9 +271,9 @@ public class EventManager : MonoBehaviour
 
 				for (int targetsInPlayIndex = 0; targetsInPlayIndex < targetsInPlayList.Count; targetsInPlayIndex++)
 				{
-					if (hit.transform.name == targetsInPlayList[targetsInPlayIndex].name && targetsInPlayList[targetsInPlayIndex].GetComponent<Duck>().IsDead == false)
+					if (hit.transform.name == targetsInPlayList[targetsInPlayIndex].name && targetsInPlayList[targetsInPlayIndex].GetComponent<ShootingTarget>().IsDead == false)
 					{
-						targetsInPlayList[targetsInPlayIndex].GetComponent<Duck>().Die ();
+						targetsInPlayList[targetsInPlayIndex].GetComponent<ShootingTarget>().Die ();
 						targetsShot++;
 					}
 				}
