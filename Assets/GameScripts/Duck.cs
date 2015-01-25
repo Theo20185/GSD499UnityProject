@@ -29,6 +29,8 @@ public class Duck : MonoBehaviour {
 
     private GameObject decoy;
 
+    private Quaternion targetVector; //the travel vector we want to achieve.
+
     public void Start()
     {
         sounds = GetComponents<AudioSource>();
@@ -42,7 +44,7 @@ public class Duck : MonoBehaviour {
         lastActionTime = startTime;
         Renderer thisRenderer = this.GetComponentInChildren<Renderer>();
         thisRenderer.material.color = duckColor;
-        setNewDirection();
+        setNewDirection(true); //immediately set direction with no interpolation
     }
 
     public void Update()
@@ -51,6 +53,9 @@ public class Duck : MonoBehaviour {
         //We can continue along our current vector.
         //We can escape (if the elapsed time is past the threshold)
         //We can change course
+
+        //interpolate the rotation vector smoothly
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetVector, Time.deltaTime);
 
         //Find out if a decoy exists - this is pretty wasteful. It would be more efficient
         //to have external code notify us of added and subtracted decoys
@@ -129,16 +134,26 @@ public class Duck : MonoBehaviour {
         transform.Translate(Vector3.forward * Time.deltaTime * duckSpeed);
     }
 
-    private void setNewDirection(float starty = 0f, float endy = 360f)
+    private void setNewDirection(bool immediate = false)
     {
-        if (isAscending) transform.rotation = Quaternion.Euler(new Vector3(Random.Range(-40f, -10f), Random.Range(starty, endy), 0));
+        Quaternion temp = Quaternion.identity;
+        if (isAscending) targetVector = Quaternion.Euler(new Vector3(Random.Range(-40f, -10f), Random.Range(0f, 360f), 0));
         else
         {
             if (decoy == null)
-                transform.rotation = Quaternion.Euler(new Vector3(Random.Range(10f, 40f), Random.Range(0, 360), 0));
+            {
+                targetVector = Quaternion.Euler(new Vector3(Random.Range(10f, 40f), Random.Range(0, 360), 0));
+            }
             else //if we're headed downward and there is a decoy then shoot for it
-                transform.LookAt(decoy.transform);
+            {
+                Debug.Log("Aiming for decoy");
+                temp = transform.rotation; //remember current rotation                            
+                transform.LookAt(decoy.transform); //calculate a new one to look at decoy
+                targetVector = transform.rotation; //store that as our target
+                transform.rotation = temp; //restore current rotation
+            }
         }
+        if (immediate) transform.rotation = targetVector;
     }
 
     //used when we hit edge of screen. A rotation of 180 degrees in Y turns us around.
@@ -158,4 +173,6 @@ public class Duck : MonoBehaviour {
         //and recalculate path
         setNewDirection();
     }
+
+
 }
