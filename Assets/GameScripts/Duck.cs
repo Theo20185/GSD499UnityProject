@@ -9,17 +9,30 @@ using System.Collections;
 //kind of jerky. In the future it should use smooth interpolation
 
 public class Duck : MonoBehaviour {
-    protected float startTime; //when was this duck spawned into being?
-    protected float lastActionTime; //last time we made a decision
-
     //these next three can be modified to change the difficulty of this duck type.
     public Color duckColor; //red, green, black, white, doesn't matter. God loves them all the same.
     public float escapeTime; //how long will duck fly around before escaping?
     public float decisionTiming; //how often this sort of duck will update its decisions
     public float duckSpeed; //how quick does this duck fly?
 
-    private bool isEscaping;
+    protected float startTime; //when was this duck spawned into being?
+    protected float lastActionTime; //last time we made a decision
+    protected float inhibitTime; //keep some path modification code from executing for a bit
+
+    private bool isEscaping; //sweet freedom!
     private bool isAscending; //false would be descending
+    private bool isDead; //I think you know what this means for our poor duck
+    private float deadTime; //time we started to die
+
+    private enum DeadState
+    {
+        NOTDEAD,
+        DYING,
+        FALLING,
+        HITGROUND
+    }
+
+    private DeadState deadState;
 
     //These are automatically filled in and cached
     private GameObject camera;
@@ -42,6 +55,7 @@ public class Duck : MonoBehaviour {
         this.animation.Play("fly");
         startTime = Time.time;
         lastActionTime = startTime;
+        inhibitTime = Time.time - 1.0f;
         Renderer thisRenderer = this.GetComponentInChildren<Renderer>();
         thisRenderer.material.color = duckColor;
         setNewDirection(true); //immediately set direction with no interpolation
@@ -54,38 +68,62 @@ public class Duck : MonoBehaviour {
         //We can escape (if the elapsed time is past the threshold)
         //We can change course
 
-        //interpolate the rotation vector smoothly
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetVector, Time.deltaTime);
+        if (isDead) //do special processing if we're dead
+        {
+            deadUpdate();
+            return;
+        }
+
+        float distanceToGround = 0.0f;
+
+        //interpolate the rotation vector smoothly - but quickly
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetVector, Time.deltaTime * 2);
 
         //Find out if a decoy exists - this is pretty wasteful. It would be more efficient
         //to have external code notify us of added and subtracted decoys
         decoy = GameObject.FindGameObjectWithTag("DuckDecoy");
+
+        //Fire a ray at the ground to see how high up we are
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, -Vector3.up, out hit))
+            distanceToGround = hit.distance;
+        //Debug.Log(distanceToGround.ToString());
 
         //Get the duck's position within the viewport
         //the bottom-left of the camera is (0,0); the top-right is (1,1)
         Vector3 vPoint = camera.camera.WorldToViewportPoint(transform.position);
 
         //Make sure the duck has not gone off the left or right of the screen
-        if (vPoint.x < 0.08)
+        //these are a bit before the edge of the screen so that the duck has time to turn around
+        if (vPoint.x < 0.12)
         {
-            //setNewDirection(200f, 250f);
-            reflectDirection();
+            Debug.Log("Hit left edge of screen");
+            reflectDirection();            
         }
 
-        if (vPoint.x > 0.92)
+        if (vPoint.x > 0.88)
         {
-            //setNewDirection(50f, 130f);
+            Debug.Log("Hit right edge of screen");
             reflectDirection();
         }
 
 
         //Also don't let duck leave top of screen unless it is escaping
-        if (vPoint.y > 0.90 && !isEscaping)
+        if ((vPoint.y > 0.80 || distanceToGround > 20.0f) && !isEscaping)
         {
+            Debug.Log("Duck is too high");
             isAscending = false; //got to go down!
             setNewDirection();
+            inhibitTime = Time.time + 1.0f;
         }
 
+        if (distanceToGround < 2.0f)
+        {
+            Debug.Log("Duck is too low");
+            isAscending = true; //must pull up
+            setNewDirection();
+            inhibitTime = Time.time + 1.0f;
+        }
 
         //Escape if it is time, we're not already escaping, and there are no decoys
         if (Time.time > (startTime + escapeTime) && !isEscaping && (decoy == null))
@@ -93,7 +131,7 @@ public class Duck : MonoBehaviour {
             Debug.Log("Escape!");
             isEscaping = true; //inhibits calling this code more than once
             //this is a pretty stiff incline upward
-            this.transform.rotation = Quaternion.Euler(new Vector3(-50f, Random.Range(0, 360), 0));
+            targetVector = Quaternion.Euler(new Vector3(-50f, Random.Range(0, 360), 0));
             duckSpeed = 50; //FAST!
             quack.Play();
             //must update GUI to show that the duck got away. A signal of some sort must be sent here.
@@ -112,7 +150,7 @@ public class Duck : MonoBehaviour {
         }
 
         //time to contemplate a decision now so long as we're not making a break for it
-        if (Time.time > (lastActionTime + decisionTiming) && !isEscaping)
+        if (Time.time > (lastActionTime + decisionTiming) && !isEscaping && Time.time > inhibitTime)
         {
             quack.Play();
             Debug.Log("Decision");
@@ -148,7 +186,7 @@ public class Duck : MonoBehaviour {
             {
                 Debug.Log("Aiming for decoy");
                 temp = transform.rotation; //remember current rotation                            
-                transform.LookAt(decoy.transform); //calculate a new one to look at decoy
+                transform.LookAt(decoy.transform.position); //calculate a new one to look at decoy
                 targetVector = transform.rotation; //store that as our target
                 transform.rotation = temp; //restore current rotation
             }
@@ -161,7 +199,8 @@ public class Duck : MonoBehaviour {
     {
         Vector3 oldDirection = transform.rotation.eulerAngles;
         oldDirection.y += 180;
-        transform.rotation = Quaternion.Euler(oldDirection);
+        targetVector = Quaternion.Euler(oldDirection);
+        inhibitTime = Time.time + 1.0f;
     }
 
 
@@ -174,5 +213,41 @@ public class Duck : MonoBehaviour {
         setNewDirection();
     }
 
+    public void Die()
+    {
+        isDead = true;
+        deadState = DeadState.DYING;
+        deadTime = Time.time;
+        animation.Play("inAirDeath");
+    }
+
+    private void deadUpdate()
+    {
+        RaycastHit hit;
+        float distanceToGround = 40f;
+
+        if (deadState == DeadState.DYING && Time.time > deadTime + 0.5f)
+        {
+            //transition to falling animation
+            deadState = DeadState.FALLING;
+            animation.Play("falling");
+        }
+
+        if (deadState == DeadState.FALLING)
+        {
+            if (Physics.Raycast(transform.position, -Vector3.up, out hit))
+                distanceToGround = hit.distance;
+            if (distanceToGround < 2.0f)
+            {
+                deadState = DeadState.HITGROUND;
+                animation.Play("FallingToHitTheFloor");
+                deadTime = Time.time;
+            }
+        }
+        if (deadState == DeadState.HITGROUND && Time.time > deadTime + 1f)
+        {
+            Destroy(this.gameObject);
+        }
+    }
 
 }
