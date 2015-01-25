@@ -7,8 +7,7 @@ using System.Collections;
 
 public class EventManager : MonoBehaviour 
 {
-	private float maxSpeed = 6f;
-
+	public float maxSpeed;
 	public GameObject firstPersonController;
 	public GameObject mainCamera;
 	public GUIText countdownTimer;

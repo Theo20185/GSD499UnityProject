@@ -12,7 +12,8 @@ function Update ()
 {
 	if (!controlEnabled)
 	{
-		motor.inputMoveDirection = transform.zero;
+		motor.canControl = false;
+		//motor.Sliding.enabled = false;
 		return;
 	}
 	
@@ -37,6 +38,7 @@ function Update ()
 	}
 	
 	// Apply the direction to the CharacterMotor
+	motor.canControl = true;
 	motor.inputMoveDirection = transform.rotation * directionVector;
 	motor.inputJump = Input.GetButton("Jump");
 }
