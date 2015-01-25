@@ -235,16 +235,17 @@ public class Duck : MonoBehaviour {
 
         if (deadState == DeadState.FALLING)
         {
+            transform.Translate(0f, -Time.deltaTime * 10f, 0f);
             if (Physics.Raycast(transform.position, -Vector3.up, out hit))
                 distanceToGround = hit.distance;
-            if (distanceToGround < 2.0f)
+            if (distanceToGround < 0.5f)
             {
                 deadState = DeadState.HITGROUND;
                 animation.Play("FallingToHitTheFloor");
                 deadTime = Time.time;
             }
         }
-        if (deadState == DeadState.HITGROUND && Time.time > deadTime + 1f)
+        if (deadState == DeadState.HITGROUND && Time.time > deadTime + 0.4f)
         {
             Destroy(this.gameObject);
         }
