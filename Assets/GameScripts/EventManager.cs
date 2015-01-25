@@ -86,7 +86,11 @@ public class EventManager : MonoBehaviour
 		if (magnitude > 0.04f) 
 		{
 			//Move the camera to look at the Focus target.
+<<<<<<< HEAD
 			mainCamera.transform.LookAt (targetSpawn.position);
+=======
+		    firstPersonController.transform.LookAt (duckSpawn.position);
+>>>>>>> origin/master
 
 			//Move the player to specified shooting position.
 			Vector3 moveDirection = shootingPosition.position - fpcPosition;
