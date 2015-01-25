@@ -251,4 +251,9 @@ public class Duck : MonoBehaviour {
         }
     }
 
+	public bool IsDead
+	{
+		get { return isDead; }
+	}
+
 }
