@@ -2,38 +2,29 @@
 using System.Collections;
 
 //Script to manage the shooting event.
+//Use TriggerEvent to begin a shooting event. This should be called upon collision with an event hotspot. TestObject has a hotkey of E assigned to test event functionality on Lake 1.
+//Once an event is triggered, the event should take care of itself. Based on the results, the control will either be returned to the player or the game will enter "Game Over" mode.
 
 public class EventManager : MonoBehaviour 
 {
-	//This is from the First Person Controller component Character Motor. This is a Javascript file, and I cannot access it here. I can only access MouseLook since that is also in C#.
 	private float maxSpeed = 6f;
 
 	public GameObject firstPersonController;
 	public GameObject mainCamera;
-	public Texture2D cursor;
+	public GUIText countdownTimer;
+	public GUITexture crosshair;
 
 	//Flags for different stages of events.
 	private enum EventStage
 	{
-		Null, TransitionIn, CountdownToEvent, EventActive, ShowResults, Return
+		Null, TransitionIn, CountdownToEvent, EventActive, ShowResults, TransitionOut
 	}
 
 	private EventStage stage = EventStage.Null;
 
 	private Transform shootingPosition;
-	private Transform focusCameraOn;
-
-	public Transform ShootingPosition
-	{
-		get { return shootingPosition; }
-		set { shootingPosition = value; }
-	}
-	
-	public Transform FocusCameraOn
-	{
-		get { return focusCameraOn; }
-		set { focusCameraOn = value; }
-	}
+	private Transform duckSpawn;
+	private float countdown;
 
 	// Use this for initialization
 	public void Start () 
@@ -53,49 +44,79 @@ public class EventManager : MonoBehaviour
 			ShowResults ();
 	}
 
-	public void TriggerEvent()
+	public void OnGUI()
 	{
-		firstPersonController.GetComponent<MouseLook> ().enabled = false;
-		GameObject.Find ("First Person Controller").GetComponent ("FPSInputController").SendMessage ("DisableControl");
-		stage = EventStage.TransitionIn;
+		if (stage == EventStage.EventActive)
+			UpdateEventOnGUI ();
+
 	}
 
-	public void TriggerEvent(Transform shootingPosition, Transform focusCameraOn)
+	public void TriggerEvent(Transform shootingPosition, Transform duckSpawn, int ducksSpawned = 10, int ducksNeeded = 5, bool useEasyDucks = true)
 	{
-
-		TriggerEvent ();
 		this.shootingPosition = shootingPosition;
-		this.focusCameraOn = focusCameraOn;
+		this.duckSpawn = duckSpawn;
+	
+		InitializeTransitionIn ();
+	}
+
+	private void InitializeTransitionIn()
+	{
+		//Screen.showCursor = false;
+		DisableControl ();
+		stage = EventStage.TransitionIn;
 	}
 
 	private void TransitionIn()
 	{
 		Vector3 fpcPosition = firstPersonController.GetComponent<Transform> ().position;
 
-		if (fpcPosition.x != ShootingPosition.position.x || fpcPosition.z != ShootingPosition.position.z) 
+		if (fpcPosition.x - shootingPosition.position.x > .01f || fpcPosition.z - shootingPosition.position.z > .01f) 
 		{
 			//Move the camera to look at the Focus target.
-			mainCamera.transform.LookAt (FocusCameraOn.position);
+			mainCamera.transform.LookAt (duckSpawn.position);
 
 			//Move the player to specified shooting position.
-			Vector3 moveDirection = ShootingPosition.position - fpcPosition;
+			Vector3 moveDirection = shootingPosition.position - fpcPosition;
 			moveDirection.y = 0;
 			Vector3 velocity = Vector3.ClampMagnitude (moveDirection * maxSpeed, maxSpeed);
-			firstPersonController.GetComponent<CharacterController>().SimpleMove (velocity);
+			firstPersonController.GetComponent<CharacterController> ().SimpleMove (velocity);
 		} 
 		else 
-		{
-			stage = EventStage.CountdownToEvent;
-		}
+			InitializeCountdownToEvent ();
+	}
+
+	private void InitializeCountdownToEvent()
+	{
+		firstPersonController.GetComponent<CharacterController> ().SimpleMove (Vector3.zero);
+		countdownTimer.enabled = true;
+		countdown = 3.5f;
+		stage = EventStage.CountdownToEvent;
 	}
 
 	private void CountDownToEvent()
 	{
+		countdown = countdown - Time.deltaTime;
+		countdownTimer.text = countdown > 0 ? countdown.ToString ("N2") : "GO!";
 
+		if (countdown < -2)
+			InitializeUpdateEvent ();
+	}
+
+	private void InitializeUpdateEvent()
+	{
+		countdownTimer.enabled = false;
+		stage = EventStage.EventActive;
 	}
 
 	private void UpdateEvent()
 	{
+	}
+
+	private void UpdateEventOnGUI()
+	{
+		float x = Input.mousePosition.x - (crosshair.texture.width / 2);
+		float y = Screen.height - Input.mousePosition.y - (crosshair.texture.height / 2);
+		GUI.DrawTexture (new Rect (x, y, crosshair.texture.width, crosshair.texture.height), crosshair.texture);
 	}
 
 	private void ShowResults()

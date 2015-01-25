@@ -46,7 +46,6 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\CharacterMotor.cs" />
      <Compile Include="Assets\GUISkin\Fantasy-Colorable\SupportingArtefacts\Scripts\ChangeColor.cs" />
      <Compile Include="Assets\GUISkin\Fantasy-Colorable\SupportingArtefacts\Scripts\ChangeColorButton.cs" />
      <Compile Include="Assets\GUISkin\Fantasy-Colorable\SupportingArtefacts\Scripts\ColoredGUISkin.cs" />
