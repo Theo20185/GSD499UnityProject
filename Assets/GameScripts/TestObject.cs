@@ -14,6 +14,8 @@ public class TestObject : MonoBehaviour {
 	public Transform shootingPosition;
 	public Transform cameraFocusOn;
 
+    private Transform lastDuck;
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -27,7 +29,7 @@ public class TestObject : MonoBehaviour {
             duckPos.x += (float)(Random.Range(0, (float)spawnSpan.x) - (spawnSpan.x / 2.0));
             duckPos.y += (float)(Random.Range(0, (float)spawnSpan.y) - (spawnSpan.y / 2.0));
             duckPos.z += (float)(Random.Range(0, (float)spawnSpan.z) - (spawnSpan.z / 2.0));
-            Instantiate(duckPrefab, duckPos, Quaternion.identity);
+            lastDuck = (Transform)Instantiate(duckPrefab, duckPos, Quaternion.identity);            
         }
         if (Input.GetKeyUp(KeyCode.C)) //spawn a duck call
         {
@@ -39,10 +41,13 @@ public class TestObject : MonoBehaviour {
             //The decoy can be instantiated without needing to worry about rotation or position. Its scripts handle it all
             Instantiate(decoyPrefab, Vector3.zero, Quaternion.identity);
         }
-
 		if (Input.GetKeyUp(KeyCode.E)) 
 		{
 			eventManager.TriggerEvent (shootingPosition, cameraFocusOn);
 		}
+        if (Input.GetKeyUp(KeyCode.Q))
+        {
+            lastDuck.SendMessage("Die");
+        }
 	}
 }
