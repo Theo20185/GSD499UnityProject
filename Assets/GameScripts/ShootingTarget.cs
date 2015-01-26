@@ -257,14 +257,22 @@ public class ShootingTarget : MonoBehaviour {
         }
         if (deadState == DeadState.HITGROUND && Time.time > deadTime + 0.4f)
         {
-            animation.Stop();
-            Destroy(this.gameObject);            
+            animation.Stop();                       
         }
+    }
+
+    public void Destroy()
+    {
+        Destroy(this.gameObject); 
     }
 
 	public bool IsDead
 	{
-		get { return isDead; }
+		get 
+        {
+            if (isDead && deadState == DeadState.HITGROUND) return true;
+            else return false;
+        }
 	}
 
 }
