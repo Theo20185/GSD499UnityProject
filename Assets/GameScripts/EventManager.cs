@@ -196,12 +196,16 @@ public class EventManager : MonoBehaviour
 		for (int targetsInPlayIndex = 0; targetsInPlayIndex < targetsInPlayList.Count; targetsInPlayIndex++) 
 		{
 			if (targetsInPlayList [targetsInPlayIndex] == null)
-			{
-				Debug.Log ("Target at index " + targetsInPlayIndex + " has been destroyed.");
 				targetsInPlayList.RemoveAt (targetsInPlayIndex);
-			}
 			else
-				Debug.Log (targetsInPlayList [targetsInPlayIndex].name + " is in play.");
+			{
+				if (targetsInPlayList[targetsInPlayIndex].GetComponent<ShootingTarget>().CanDestroy == true)
+				{
+					targetsInPlayList[targetsInPlayIndex].GetComponent<ShootingTarget>().Destroy();
+					targetsInPlayList.RemoveAt (targetsInPlayIndex);
+				}
+			}
+
 		}
 
 		if (targetsInPlayList.Count == 0 && targetsInPlay == true) 

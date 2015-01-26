@@ -1,8 +1,9 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\GameScripts\EventManager.cs">
     <Files>
-      <File FileName="Assets\GameScripts\EventManager.cs" Line="230" Column="3" />
+      <File FileName="Assets\GameScripts\ShootingTarget.cs" Line="277" Column="23" />
+      <File FileName="Assets\GameScripts\EventManager.cs" Line="191" Column="20" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
