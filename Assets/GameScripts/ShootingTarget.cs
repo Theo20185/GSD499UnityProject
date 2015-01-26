@@ -22,6 +22,7 @@ public class ShootingTarget : MonoBehaviour {
     private float deadTime; //time we started to die
 
     private bool isClay; //is this a simple clay target instead?
+    private bool didShoot; //have we launched the clay yet?
 
     private enum DeadState
     {
@@ -35,6 +36,7 @@ public class ShootingTarget : MonoBehaviour {
 
     //These are automatically filled in and cached
     private GameObject camera;
+    private GameObject player;
     private AudioSource[] sounds;
     private AudioSource flapping;
     private AudioSource quack;
@@ -46,9 +48,9 @@ public class ShootingTarget : MonoBehaviour {
 
     public void Start()
     {
-
         isClay = false;
-        if (GetComponent<TargetSpawn>().targetType == TargetSpawn.TargetType.Clay) isClay = true;
+        EventManager eventMgr = (EventManager)GameObject.Find("EventManager").GetComponent<EventManager>();
+        if (eventMgr.GetTargetType() == "Clays") isClay = true;
 
         if (!isClay)
         {
@@ -70,8 +72,13 @@ public class ShootingTarget : MonoBehaviour {
         else
         {
             camera = GameObject.Find("Main Camera");
+            player = GameObject.Find("First Person Controller");
+            Vector3 clayPos = player.transform.position;
             startTime = Time.time;
-            rigidbody.AddForce(0f, 0f, 0f);
+            Vector3 forwardplayer = player.transform.forward;
+            clayPos += (forwardplayer * 2); //start decoy just a short distance in front of the player.
+            clayPos.y -= 1; //also down a bit so it appears that the player threw it from their hands
+            transform.position = clayPos;
         }
     }
 
@@ -188,12 +195,24 @@ public class ShootingTarget : MonoBehaviour {
             //finally, if we got here then try to move in the current direction
             transform.Translate(Vector3.forward * Time.deltaTime * duckSpeed);
         }
+        else //clay shot
+        {
+            if (!didShoot)
+            {
+                Rigidbody rigidbody = GetComponent<Rigidbody>();
+                //We're about to do a single push so it has to be pretty hard
+                Vector3 forceShoot = player.transform.forward * 1000; //push in front of us hard
+                forceShoot.y += 600; //add some upward motion too.
+                rigidbody.AddForce(forceShoot);
+                didShoot = true; //no mo' shoving
+            }
+        }
     }
 
     private void setNewDirection(bool immediate = false)
     {
         Quaternion temp = Quaternion.identity;
-        if (isAscending) targetVector = Quaternion.Euler(new Vector3(Random.Range(-40f, -10f), Random.Range(0f, 360f), 0));
+        if (isAscending) targetVector = Quaternion.Euler(new Vector3(Random.Range(-40f, -10f), Random.Range(-90f, 180f), 0));
         else
         {
             if (decoy == null)

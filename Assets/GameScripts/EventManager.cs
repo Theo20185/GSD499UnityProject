@@ -15,6 +15,7 @@ public class EventManager : MonoBehaviour
 	public GameObject emptyGun;
 	public Transform duckPrefabEasy;
 	public Transform duckPrefabHard;
+    public Transform clayPrefab;
 	public GUIText requirements;
 	public GUIText countdownTimer;
 	public GUIText flyAway;
@@ -114,10 +115,16 @@ public class EventManager : MonoBehaviour
 		stage = EventStage.ShowRequirements;
 	}
 
+    public string GetTargetType()
+    {
+        string target = targetSpawn.GetComponent<TargetSpawn>().targetType == TargetSpawn.TargetType.Clay ? "Clays" : "Ducks";
+        return target;
+    }
+
 	private void ShowRequirements()
 	{
 		timer = timer - Time.deltaTime;
-		string target = targetSpawn.GetComponent<TargetSpawn> ().targetType == TargetSpawn.TargetType.Clay ? "Clays" : "Ducks";
+        string target = GetTargetType();
 
 		if (timer < 6f && timer >= 4f) 
 		{
@@ -273,7 +280,9 @@ public class EventManager : MonoBehaviour
 
 			if (targetSpawn.GetComponent<TargetSpawn> ().targetType == TargetSpawn.TargetType.HardDuck)
 				target = duckPrefabHard;
-			//TODO: Set target to Clay object if the spawn is for Clays.
+
+            if (targetSpawn.GetComponent<TargetSpawn>().targetType == TargetSpawn.TargetType.Clay)
+                target = clayPrefab;
 
 			target.GetComponent<ShootingTarget> ().escapeTime = targetSpawn.GetComponent<TargetSpawn> ().escapeTime;
 
