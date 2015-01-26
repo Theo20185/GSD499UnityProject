@@ -243,9 +243,11 @@ public class ShootingTarget : MonoBehaviour {
 
         if (deadState == DeadState.FALLING)
         {
+            transform.rotation = Quaternion.identity;
             transform.Translate(0f, -Time.deltaTime * 10f, 0f);
             if (Physics.Raycast(transform.position, -Vector3.up, out hit))
                 distanceToGround = hit.distance;
+            //Debug.Log(distanceToGround.ToString());
             if (distanceToGround < 0.5f)
             {
                 deadState = DeadState.HITGROUND;
@@ -255,7 +257,8 @@ public class ShootingTarget : MonoBehaviour {
         }
         if (deadState == DeadState.HITGROUND && Time.time > deadTime + 0.4f)
         {
-            Destroy(this.gameObject);
+            animation.Stop();
+            Destroy(this.gameObject);            
         }
     }
 
