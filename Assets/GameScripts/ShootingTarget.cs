@@ -287,9 +287,16 @@ public class ShootingTarget : MonoBehaviour {
 	{
 		get 
         {
-            if (isDead && deadState == DeadState.HITGROUND) return true;
-            else return false;
+			return isDead;
         }
+	}
+
+	public bool CanDestroy
+	{
+		get
+		{
+			return deadState == DeadState.HITGROUND && Time.time > deadTime + 0.4f;
+		}
 	}
 
 }
