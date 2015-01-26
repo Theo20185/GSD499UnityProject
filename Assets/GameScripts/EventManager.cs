@@ -17,6 +17,8 @@ public class EventManager : MonoBehaviour
 	public Transform duckPrefabHard;
 	public GUIText requirements;
 	public GUIText countdownTimer;
+	public GUIText flyAway;
+	public GUIText flyAwayTimer;
 	public GUITexture crosshair;
 	public GUITexture shotgunShell;
 	public GUITexture trophy;
@@ -146,6 +148,8 @@ public class EventManager : MonoBehaviour
 	{
 		roundNumber++;
 		requirements.enabled = false;
+		flyAway.enabled = false;
+		flyAwayTimer.enabled = false;
 		countdownTimer.enabled = true;
 		timer = 3f;
 		shells = 3;
@@ -173,10 +177,20 @@ public class EventManager : MonoBehaviour
 	{
 		timer = timer - Time.deltaTime;
 
+		float flyAwayTime = (targetSpawn.GetComponent<TargetSpawn> ().escapeTime - ((-1 * timer) + 0.5f));
+
+		if (flyAwayTime < 0) 
+		{
+			flyAway.enabled = true;
+			flyAwayTime = 0;
+		}
+
+		flyAwayTimer.text = "Time: " + flyAwayTime.ToString ("N2");
+
 		if (timer <= 0 && targetsInPlay == false)
 			SpawnTargets ();
 
-		if (Input.GetMouseButtonDown (0))
+		if (Input.GetMouseButtonDown (0) && flyAway.enabled == false)
 			FireGun ();
 
 		for (int targetsInPlayIndex = 0; targetsInPlayIndex < targetsInPlayList.Count; targetsInPlayIndex++) 
@@ -201,22 +215,29 @@ public class EventManager : MonoBehaviour
 
 	private void UpdateEventOnGUI()
 	{
-		float x = Input.mousePosition.x - (crosshair.texture.width / 2);
-		float y = Screen.height - Input.mousePosition.y - (crosshair.texture.height / 2);
-		GUI.DrawTexture (new Rect (x, y, crosshair.texture.width, crosshair.texture.height), crosshair.texture);
+		if (flyAway.enabled == false) 
+		{
+			float x = Input.mousePosition.x - (crosshair.texture.width / 2);
+			float y = Screen.height - Input.mousePosition.y - (crosshair.texture.height / 2);
+			GUI.DrawTexture (new Rect (x, y, crosshair.texture.width, crosshair.texture.height), crosshair.texture);
+		}
 
 		for (int guiShellsIndex = 0; guiShellsIndex < shells; guiShellsIndex++)
 			GUI.DrawTexture (new Rect(10 + (guiShellsIndex * 50), Screen.height - 110, shotgunShell.texture.width, shotgunShell.texture.height), shotgunShell.texture);
 
-		GUI.DrawTexture (new Rect((Screen.width / 2) - (deadDuck.texture.width / 2) - 55, Screen.height - 110, deadDuck.texture.width, deadDuck.texture.height), deadDuck.texture);
 		GUI.TextArea (new Rect ((Screen.width / 2) - (deadDuck.texture.width / 2) - 55, Screen.height - 110, deadDuck.texture.width, deadDuck.texture.height), targetsShot.ToString ("N0"));
+		GUI.DrawTexture (new Rect((Screen.width / 2) - (deadDuck.texture.width / 2) - 55, Screen.height - 110, deadDuck.texture.width, deadDuck.texture.height), deadDuck.texture);
 
-		GUI.DrawTexture (new Rect((Screen.width / 2) + (trophy.texture.width / 2) + 55, Screen.height - 110, trophy.texture.width, trophy.texture.height), trophy.texture);
 		GUI.TextArea (new Rect ((Screen.width / 2) + (trophy.texture.width / 2) + 55, Screen.height - 110, trophy.texture.width, trophy.texture.height), targetSpawn.GetComponent<TargetSpawn> ().targetsNeeded.ToString ("N0"));
+		GUI.DrawTexture (new Rect((Screen.width / 2) + (trophy.texture.width / 2) + 55, Screen.height - 110, trophy.texture.width, trophy.texture.height), trophy.texture);
 	}
 
 	private void InitializeShowResults()
 	{
+		flyAway.enabled = false;
+		flyAwayTimer.enabled = false;
+		stage = EventStage.ShowResults;
+		timer = 10f;
 	}
 
 	private void ShowResults()
@@ -237,6 +258,8 @@ public class EventManager : MonoBehaviour
 
 	private void SpawnTargets()
 	{
+		flyAwayTimer.enabled = true;
+
 		targetsInPlay = true;
 		targetsInPlayList = new List<Transform> ();
 
