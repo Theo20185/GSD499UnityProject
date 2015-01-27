@@ -8,6 +8,8 @@ using System.Collections.Generic;
 
 public class EventManager : MonoBehaviour 
 {
+	public GameManager gameManager;
+
 	public float maxSpeed;
 	public GameObject firstPersonController;
 	public GameObject mainCamera;
@@ -20,6 +22,8 @@ public class EventManager : MonoBehaviour
 	public GUIText countdownTimer;
 	public GUIText flyAway;
 	public GUIText flyAwayTimer;
+	public GUIText roundResults;
+	public GUIText eventResults;
 	public GUITexture crosshair;
 	public GUITexture shotgunShell;
 	public GUITexture trophy;
@@ -28,7 +32,7 @@ public class EventManager : MonoBehaviour
 	//Flags for different stages of events.
 	private enum EventStage
 	{
-		Null, TransitionIn, ShowRequirements, CountdownToEvent, EventActive, ShowResults, TransitionOut
+		Null, TransitionIn, ShowRequirements, CountdownToEvent, EventActive, ShowRoundResults, ShowEventResults, TransitionOut
 	}
 
 	private EventStage stage = EventStage.Null;
@@ -37,7 +41,8 @@ public class EventManager : MonoBehaviour
 	private Transform targetSpawn;
 	private float timer;
 	private int roundNumber;
-	private int targetsShot;
+	private int targetsShotTotal;
+	private int targetsShotRound;
 	private bool targetsInPlay;
 	private List<Transform> targetsInPlayList;
 
@@ -60,8 +65,10 @@ public class EventManager : MonoBehaviour
 			CountDownToEvent ();
 		if (stage == EventStage.EventActive)
 			UpdateEvent ();
-		if (stage == EventStage.ShowResults)
-			ShowResults ();
+		if (stage == EventStage.ShowRoundResults)
+			ShowRoundResults ();
+		if (stage == EventStage.ShowEventResults)
+			ShowEventResults ();
 	}
 
 	public void OnGUI()
@@ -74,7 +81,7 @@ public class EventManager : MonoBehaviour
 	{
 		this.shootingPosition = shootingPosition;
 		this.targetSpawn = duckSpawn;
-		targetsShot = 0;
+		targetsShotTotal = 0;
 		roundNumber = 0;
 
 		InitializeTransitionIn ();
@@ -128,24 +135,24 @@ public class EventManager : MonoBehaviour
 
 		if (timer < 6f && timer >= 4f) 
 		{
-			requirements.text = string.Concat ("Event!","\n",
+			requirements.text = string.Concat ("Event Start!","\n",
 			                                   "Rounds: ", targetSpawn.GetComponent<TargetSpawn>().spawnRounds.ToString ("n0"));
 		} 
 		else if (timer < 4f && timer >= 2f) 
 		{
-			requirements.text = string.Concat ("Event!","\n",
+			requirements.text = string.Concat ("Event Start!","\n",
 			                                   "Rounds: ", targetSpawn.GetComponent<TargetSpawn>().spawnRounds.ToString("n0"), "\n", 
 			                                   target, " Needed: ", targetSpawn.GetComponent<TargetSpawn>().targetsNeeded.ToString ("n0"));
 		} 
 		else if (timer < 2f) 
 		{
-			requirements.text = string.Concat ("Event!","\n",
+			requirements.text = string.Concat ("Event Start!","\n",
 			                                   "Rounds: ", targetSpawn.GetComponent<TargetSpawn>().spawnRounds.ToString ("n0"), "\n", 
 			                                   target, " Needed: ", targetSpawn.GetComponent<TargetSpawn>().targetsNeeded.ToString ("n0"), "\n",
 			                                   target, " at Event: ", (targetSpawn.GetComponent<TargetSpawn>().spawnRounds * targetSpawn.GetComponent<TargetSpawn>().targetsPerSpawn).ToString ("n0"));
 		} 
 		else 
-			requirements.text = "Event!";
+			requirements.text = "Event Start!";
 
 		if (timer < 0)
 			InitializeCountdownToEvent ();
@@ -155,8 +162,7 @@ public class EventManager : MonoBehaviour
 	{
 		roundNumber++;
 		requirements.enabled = false;
-		flyAway.enabled = false;
-		flyAwayTimer.enabled = false;
+		roundResults.enabled = false;
 		countdownTimer.enabled = true;
 		timer = 3f;
 		shells = 3;
@@ -165,6 +171,8 @@ public class EventManager : MonoBehaviour
 
 	private void CountDownToEvent()
 	{
+		flyAway.enabled = false;
+		flyAwayTimer.enabled = false;
 		timer = timer - Time.deltaTime;
 		countdownTimer.text = timer > 0 ? "Round " + roundNumber + "\n" + timer.ToString ("N2") : "Round " + roundNumber + "\nGO!";
 
@@ -177,6 +185,7 @@ public class EventManager : MonoBehaviour
 		countdownTimer.enabled = false;
 		timer = 0.5f;
 		targetsInPlay = false;
+		targetsShotRound = 0;
 		stage = EventStage.EventActive;
 	}
 
@@ -184,21 +193,13 @@ public class EventManager : MonoBehaviour
 	{
 		timer = timer - Time.deltaTime;
 
-		float flyAwayTime = (targetSpawn.GetComponent<TargetSpawn> ().escapeTime - ((-1 * timer) + 0.5f));
-
-		if (flyAwayTime < 0) 
-		{
-			flyAway.enabled = true;
-			flyAwayTime = 0;
-		}
-
-		flyAwayTimer.text = "Time: " + flyAwayTime.ToString ("N2");
-
 		if (timer <= 0 && targetsInPlay == false)
 			SpawnTargets ();
 
 		if (Input.GetMouseButtonDown (0) && flyAway.enabled == false)
 			FireGun ();
+
+		bool allTargetsAreDead = true;
 
 		for (int targetsInPlayIndex = 0; targetsInPlayIndex < targetsInPlayList.Count; targetsInPlayIndex++) 
 		{
@@ -211,16 +212,31 @@ public class EventManager : MonoBehaviour
 					targetsInPlayList[targetsInPlayIndex].GetComponent<ShootingTarget>().Destroy();
 					targetsInPlayList.RemoveAt (targetsInPlayIndex);
 				}
+				else
+				{
+					if (targetsInPlayList[targetsInPlayIndex].GetComponent<ShootingTarget>().IsDead == false)
+						allTargetsAreDead = false;
+				}
 			}
-
 		}
+
+		float flyAwayTime = (targetSpawn.GetComponent<TargetSpawn> ().escapeTime - ((-1 * timer) + 0.5f));
+
+		if (flyAwayTime < 0) 
+		{
+			Debug.Log ("Fly Away Time: " + flyAwayTime.ToString ("N2"));
+
+			flyAway.enabled = true;
+			flyAwayTimer.text = "Time: 0.00";
+		}
+		else if (targetsInPlay == true && allTargetsAreDead == true)
+			flyAwayTimer.text = "Time: 0.00";
+		else
+			flyAwayTimer.text = "Time: " + flyAwayTime.ToString ("N2");
 
 		if (targetsInPlayList.Count == 0 && targetsInPlay == true) 
 		{
-			if (roundNumber == targetSpawn.GetComponent<TargetSpawn>().spawnRounds)
-				InitializeShowResults ();
-			else
-				InitializeCountdownToEvent ();
+			InitializeShowRoundResults ();
 		}
 	}
 
@@ -236,23 +252,75 @@ public class EventManager : MonoBehaviour
 		for (int guiShellsIndex = 0; guiShellsIndex < shells; guiShellsIndex++)
 			GUI.DrawTexture (new Rect(10 + (guiShellsIndex * 50), Screen.height - 110, shotgunShell.texture.width, shotgunShell.texture.height), shotgunShell.texture);
 
-		GUI.TextArea (new Rect ((Screen.width / 2) - (deadDuck.texture.width / 2) - 55, Screen.height - 110, deadDuck.texture.width, deadDuck.texture.height), targetsShot.ToString ("N0"));
+		GUI.TextArea (new Rect ((Screen.width / 2) - (deadDuck.texture.width / 2) - 55, Screen.height - 110, deadDuck.texture.width, deadDuck.texture.height), targetsShotTotal.ToString ("N0"));
 		GUI.DrawTexture (new Rect((Screen.width / 2) - (deadDuck.texture.width / 2) - 55, Screen.height - 110, deadDuck.texture.width, deadDuck.texture.height), deadDuck.texture);
 
 		GUI.TextArea (new Rect ((Screen.width / 2) + (trophy.texture.width / 2) + 55, Screen.height - 110, trophy.texture.width, trophy.texture.height), targetSpawn.GetComponent<TargetSpawn> ().targetsNeeded.ToString ("N0"));
 		GUI.DrawTexture (new Rect((Screen.width / 2) + (trophy.texture.width / 2) + 55, Screen.height - 110, trophy.texture.width, trophy.texture.height), trophy.texture);
 	}
 
-	private void InitializeShowResults()
+	private void InitializeShowRoundResults()
 	{
 		flyAway.enabled = false;
 		flyAwayTimer.enabled = false;
-		stage = EventStage.ShowResults;
-		timer = 10f;
+		roundResults.enabled = true;
+		roundResults.text = "Round " + roundNumber + ": Bagged " + targetsShotRound + "!";
+		stage = EventStage.ShowRoundResults;
+		timer = 2f;
 	}
 
-	private void ShowResults()
+	private void ShowRoundResults()
 	{
+		timer = timer - Time.deltaTime;
+
+		if (timer <= 0) 
+		{
+			if (roundNumber == targetSpawn.GetComponent<TargetSpawn>().spawnRounds)
+				InitializeShowEventResults ();
+			else
+				InitializeCountdownToEvent ();
+		}
+	}
+
+	private void InitializeShowEventResults()
+	{
+		roundResults.enabled = false;
+		eventResults.enabled = true;
+		stage = EventStage.ShowEventResults;
+		timer = 6f;
+	}
+
+	private void ShowEventResults()
+	{
+		timer = timer - Time.deltaTime;
+
+		bool passed = targetsShotTotal >= targetSpawn.GetComponent<TargetSpawn> ().targetsNeeded;
+
+		if (timer < 4f && timer >= 2f) 
+		{
+			eventResults.text = string.Concat ("Event Complete!","\n",
+			                                   "Bagged: ", targetsShotTotal);
+		} 
+		else if (timer < 2f) 
+		{
+			eventResults.text = string.Concat ("Event Complete!","\n",
+			                                   "Bagged: ", targetsShotTotal, "\n",
+			                                   "Result: ", passed ? "Passed!" : "Failed!");		
+		} 
+		else 
+			eventResults.text = "Event Complete!";
+
+		if (timer <= 0)
+			TransitionOut ();
+	}
+
+	private void TransitionOut()
+	{
+		eventResults.enabled = false;
+		stage = EventStage.TransitionOut;
+		//TODO: Set GameManager back to Active if event is passed or GameOver if event failed.
+		//For prototype, just return control to the player.
+		ReturnControl ();
 	}
 
 	private void DisableControl()
@@ -301,8 +369,6 @@ public class EventManager : MonoBehaviour
 	{
 		if (shells > 0) 
 		{
-			Debug.Log ("Fire!");
-
 			shotgun.audio.Play ();
 			shells--;
 
@@ -311,19 +377,16 @@ public class EventManager : MonoBehaviour
 
 			if (Physics.Raycast (ray, out hit))
 			{
-				Debug.Log (hit.transform.name + " is hit!");
-
 				for (int targetsInPlayIndex = 0; targetsInPlayIndex < targetsInPlayList.Count; targetsInPlayIndex++)
 				{
 					if (hit.transform.name == targetsInPlayList[targetsInPlayIndex].name && targetsInPlayList[targetsInPlayIndex].GetComponent<ShootingTarget>().IsDead == false)
 					{
 						targetsInPlayList[targetsInPlayIndex].GetComponent<ShootingTarget>().Die ();
-						targetsShot++;
+						targetsShotTotal++;
+						targetsShotRound++;
 					}
 				}
 			}
-			else
-				Debug.Log ("Nothing hit!");
 		} 
 		else 
 		{
