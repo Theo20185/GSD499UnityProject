@@ -11,7 +11,7 @@ public class DogScript : MonoBehaviour {
 	private Transform target;			//final target to travel to
 	private float travelSpeed;			//final travel speed
 	private float walkingSpeed = 1.5f;	//set walking speed
-	private float runningSpeed = 7.0f;	//set running speed
+	private float runningSpeed = 6.0f;	//set running speed
 
 	private bool dogWalking = false;	//true if dog is to walk
 	private bool dogRunning = false;	//true if dog is to run
@@ -35,12 +35,18 @@ public class DogScript : MonoBehaviour {
 	private GameObject jumpTarget4;
 	private GameObject jumpTarget5;
 	private GameObject jumpTarget6;
+	
+	private SkinnedMeshRenderer dogMeshRender;
 
 	public int nextStage = 1;	//need to change to one when done
 	private bool moveToNextSpot = false;
 
+	private bool animationStart = false;
+
 	// Use this for initialization
 	private void Start () {
+
+		dogMeshRender = GameObject.Find ("dalmatynczyk1").GetComponent<SkinnedMeshRenderer>();
 
 		temp1 = GameObject.Find ("DogTarget1");
 		temp2 = GameObject.Find ("DogTarget2");
@@ -144,9 +150,10 @@ public class DogScript : MonoBehaviour {
 		if (dogJumping) {
 			float step = travelSpeed * Time.deltaTime;
 			transform.position = Vector3.MoveTowards (transform.position, target.position, step);
-			animation.Play ("Jump High", PlayMode.StopAll);
+			animation.Play ("Jump Low", PlayMode.StopAll);
 			if(transform.position == target.position){
 				dogJumping = false;
+				dogMeshRender.enabled = false;
 				//print ("reached target");
 			}
 		}
@@ -154,8 +161,10 @@ public class DogScript : MonoBehaviour {
 		if (dogLaughing) {
 			animation["Hit Front"].speed = 6f;
 			animation.Play ("Hit Front", PlayMode.StopAll);
+			transform.LookAt(firstPersonController.transform);
 			if(Time.time >= (timeSet + 1)){
 				dogLaughing = false;
+				animationStart = false;
 			 }
 		}
 
@@ -180,6 +189,10 @@ public class DogScript : MonoBehaviour {
 	}
 	
 	public void dogJump(){
+
+		if (animationStart) return;
+
+		animationStart = true;
 
 		switch (nextStage) {
 		case 1:
@@ -208,6 +221,13 @@ public class DogScript : MonoBehaviour {
 	}
 
 	public void dogLaugh(){
+
+		if (dogMeshRender.enabled == false) animationStart = false;
+
+		if (animationStart) return;
+		animationStart = true;
+
+		dogMeshRender.enabled = true;
 		timeSet = Time.time;
 		dogLaughing = true;
 		StartCoroutine (playLaugh ());
@@ -222,6 +242,7 @@ public class DogScript : MonoBehaviour {
 
 	public IEnumerator playSingleBark(){
 		yield return new WaitForSeconds (.5f);
+		//audio.pitch = 1f;
 		audio.clip = dogSingleBark;
 		audio.Play ();
 	}
@@ -234,6 +255,7 @@ public class DogScript : MonoBehaviour {
 
 	public IEnumerator playLaugh(){
 		yield return new WaitForSeconds (.5f);
+		//audio.pitch = 1.5f;
 		audio.clip = dogLaughter;
 		audio.Play ();
 	}

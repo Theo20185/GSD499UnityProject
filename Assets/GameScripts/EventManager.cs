@@ -15,6 +15,7 @@ public class EventManager : MonoBehaviour
 	public GameObject mainCamera;
 	public GameObject shotgun;
 	public GameObject emptyGun;
+	public GameObject dogPrefab;
 	public Transform duckPrefabEasy;
 	public Transform duckPrefabHard;
     public Transform clayPrefab;
@@ -176,6 +177,9 @@ public class EventManager : MonoBehaviour
 		timer = timer - Time.deltaTime;
 		countdownTimer.text = timer > 0 ? "Round " + roundNumber + "\n" + timer.ToString ("N2") : "Round " + roundNumber + "\nGO!";
 
+		//call the dog jump animation
+		dogPrefab.GetComponent<DogScript>().dogJump ();
+
 		if (timer < -2)
 			InitializeUpdateEvent ();
 	}
@@ -228,6 +232,9 @@ public class EventManager : MonoBehaviour
 
 			flyAway.enabled = true;
 			flyAwayTimer.text = "Time: 0.00";
+
+			//call the dog jump laugh
+			dogPrefab.GetComponent<DogScript>().dogLaugh ();
 		}
 		else if (targetsInPlay == true && allTargetsAreDead == true)
 			flyAwayTimer.text = "Time: 0.00";
