@@ -4,6 +4,7 @@ using System.Collections;
 public class MainMenuManager : MonoBehaviour {
 
 	public GUISkin customSkin;
+	public GUITexture crosshair;
 
 	// Use this for initialization
 	void Start () {
@@ -17,7 +18,7 @@ public class MainMenuManager : MonoBehaviour {
 
 	void OnGUI(){
 
-		GUI.depth = 1;
+		GUI.depth = 0;
 
 		GUI.skin = customSkin;
 
@@ -31,6 +32,13 @@ public class MainMenuManager : MonoBehaviour {
 
 		GUI.Label(new Rect(100, 500, 400, 100), "Top Score: 120,000");
 		GUI.EndGroup();
+
+		GUI.depth = 1;
+
+		//cursor
+		float x = Input.mousePosition.x - (crosshair.texture.width / 2);
+		float y = Screen.height - Input.mousePosition.y - (crosshair.texture.height / 2);
+		GUI.DrawTexture (new Rect (x, y, crosshair.texture.width, crosshair.texture.height), crosshair.texture);
 
 	}
 }
