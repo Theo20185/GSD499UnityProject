@@ -319,6 +319,8 @@ public class EventManager : MonoBehaviour
 
 		if (timer <= 0)
 			TransitionOut ();
+
+		dogPrefab.GetComponent<DogScript>().moveToNextStage ();
 	}
 
 	private void TransitionOut()
