@@ -59,6 +59,7 @@ public class DogScript : MonoBehaviour {
 	private bool walkingBackToPlayer = false;
 	private bool dogLayingDown = false;
 	private bool dogWithDuck = false;
+	private bool clayEvent = false;
 
 	// Use this for initialization
 	private void Start () {
@@ -302,6 +303,7 @@ public class DogScript : MonoBehaviour {
 	private void distanceFPCtoNearestTent(){
 		GameObject location = temp1;
 		nextStage = 1;
+		clayEvent = false;
 		float distFinal = Vector3.Distance(temp1.transform.position, firstPersonController.transform.position);
 
 		float dist = Vector3.Distance(temp2.transform.position, firstPersonController.transform.position);
@@ -309,6 +311,7 @@ public class DogScript : MonoBehaviour {
 			distFinal = dist;
 			location = temp2;
 			nextStage = 2;
+			clayEvent = false;
 		}
 
 		dist = Vector3.Distance(temp3.transform.position, firstPersonController.transform.position);
@@ -316,6 +319,7 @@ public class DogScript : MonoBehaviour {
 			distFinal = dist;
 			location = temp3;
 			nextStage = 3;
+			clayEvent = false;
 		}
 
 		dist = Vector3.Distance(temp4.transform.position, firstPersonController.transform.position);
@@ -323,6 +327,7 @@ public class DogScript : MonoBehaviour {
 			distFinal = dist;
 			location = temp4;
 			nextStage = 4;
+			clayEvent = false;
 		}
 
 		dist = Vector3.Distance(temp5.transform.position, firstPersonController.transform.position);
@@ -330,6 +335,7 @@ public class DogScript : MonoBehaviour {
 			distFinal = dist;
 			location = temp5;
 			nextStage = 5;
+			clayEvent = false;
 		}
 
 		dist = Vector3.Distance(temp6.transform.position, firstPersonController.transform.position);
@@ -337,6 +343,7 @@ public class DogScript : MonoBehaviour {
 			distFinal = dist;
 			location = temp6;
 			nextStage = 6;
+			clayEvent = true;
 		}
 
 		//print("Distance to Neartes Tent number " + location + ": " + distFinal);
@@ -346,14 +353,16 @@ public class DogScript : MonoBehaviour {
 
 	public void dogReady (){
 
-		if(!animationStart){
-			if (!eventStarted) {
-				dogJump();
-			}
-			else{
-				dogWithDuck = false;
-				dogMeshRender.enabled = false;
-				deadDuck.enabled = false;
+		if(!clayEvent){
+			if(!animationStart){
+				if (!eventStarted) {
+					dogJump();
+				}
+				else{
+					dogWithDuck = false;
+					dogMeshRender.enabled = false;
+					deadDuck.enabled = false;
+				}
 			}
 		}
 
@@ -387,11 +396,13 @@ public class DogScript : MonoBehaviour {
 
 	public void dogCaptureDuck(){
 
-		dogWithDuck = true;
-		dogMeshRender.enabled = true;
-		deadDuck.enabled = true;
-		audio.clip = duckCaptured;
-		audio.Play ();
+		if(!clayEvent){
+			dogWithDuck = true;
+			dogMeshRender.enabled = true;
+			deadDuck.enabled = true;
+			audio.clip = duckCaptured;
+			audio.Play ();
+		}
 	}
 	
 	public void dogJump(){
@@ -420,10 +431,13 @@ public class DogScript : MonoBehaviour {
 			break;
 		}
 
-		travelSpeed = 5;
-		dogJumping = true;
 		eventStarted = true;
-		StartCoroutine (playSingleBark ());																
+
+		if(!clayEvent){
+			travelSpeed = 5;
+			dogJumping = true;
+			StartCoroutine (playSingleBark ());			
+		}
 	}
 
 	public void dogLaugh(){
@@ -433,10 +447,12 @@ public class DogScript : MonoBehaviour {
 		if (animationStart) return;
 		animationStart = true;
 
-		dogMeshRender.enabled = true;
-		timeSet = Time.time;
-		dogLaughing = true;
-		StartCoroutine (playLaugh ());
+		if(!clayEvent){
+			dogMeshRender.enabled = true;
+			timeSet = Time.time;
+			dogLaughing = true;
+			StartCoroutine (playLaugh ());
+		}
 
 	}
 
