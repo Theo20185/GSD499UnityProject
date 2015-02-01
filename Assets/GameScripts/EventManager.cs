@@ -19,6 +19,8 @@ public class EventManager : MonoBehaviour
 	public Transform duckPrefabEasy;
 	public Transform duckPrefabHard;
     public Transform clayPrefab;
+    public Transform duckCall;
+    public Transform duckDecoyPrefab;
 	public GUIText requirements;
 	public GUIText countdownTimer;
 	public GUIText flyAway;
