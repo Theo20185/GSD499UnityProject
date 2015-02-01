@@ -23,18 +23,10 @@ public class TestObject : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyUp(KeyCode.X)) //spawn a duck
-        {
-            Vector3 duckPos = spawnBasis.position;
-            duckPos.x += (float)(Random.Range(0, (float)spawnSpan.x) - (spawnSpan.x / 2.0));
-            duckPos.y += (float)(Random.Range(0, (float)spawnSpan.y) - (spawnSpan.y / 2.0));
-            duckPos.z += (float)(Random.Range(0, (float)spawnSpan.z) - (spawnSpan.z / 2.0));
-            lastDuck = (Transform)Instantiate(duckPrefab, duckPos, Quaternion.identity);            
-        }
         if (Input.GetKeyUp(KeyCode.C)) //spawn a duck call
         {
-            //no need to set position or rotation.
-            Instantiate(duckcallPrefab, Vector3.zero, Quaternion.identity);
+            DuckCall callScript = duckcallPrefab.gameObject.GetComponent<DuckCall>();
+            callScript.startDuckCall();
         }
         if (Input.GetKeyUp(KeyCode.V)) //spawn a decoy
         {
