@@ -111,10 +111,15 @@ public class EventManager : MonoBehaviour
             //clays have the spawn position right by the player so we have to fudge the view position a bit.
             if (targetSpawn.GetComponent<TargetSpawn>().targetType == TargetSpawn.TargetType.Clay)
             {
-                lookAtPos += firstPersonController.transform.forward * 50;                
+                lookAtPos += firstPersonController.transform.forward * 50;
+                lookAtPos.y += 2; //look up a bit
+            }
+            else
+            {
+                lookAtPos.y += 10; //look up a bit - need more lift because these targets are farther out
             }
 
-            lookAtPos.y += 2; //look up a bit
+            
 
 		    firstPersonController.transform.LookAt (lookAtPos);
 
