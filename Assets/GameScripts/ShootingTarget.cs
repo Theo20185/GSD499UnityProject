@@ -11,6 +11,7 @@ public class ShootingTarget : MonoBehaviour {
     public float escapeTime; //how long will duck fly around before escaping?
     public float decisionTiming; //how often this sort of duck will update its decisions
     public float duckSpeed; //how quick does this duck fly?
+    public Transform splashFX; //link to prefab that gives us a splash
 
     protected float startTime; //when was this thing spawned into being?
     protected float lastActionTime; //last time we made a decision - if we're a duck
@@ -237,8 +238,15 @@ public class ShootingTarget : MonoBehaviour {
     public void OnTriggerEnter(Collider other)
     {
         Debug.Log(other.name);
-        //if the duck hit a trigger it probably means we hit the ground or lake so make sure to go up!
-        SetNewHeading();
+        if (!isClay && (deadState == DeadState.FALLING || deadState == DeadState.DYING))
+        { 
+            if (other.name.Contains("Lake"))
+            { //splash if on a lake
+                Instantiate(splashFX, transform.position, Quaternion.identity);
+            }
+            deadState = DeadState.HITGROUND;
+        }
+
     }
 
     public void Die()
@@ -268,15 +276,15 @@ public class ShootingTarget : MonoBehaviour {
         {
             transform.rotation = Quaternion.identity;
             transform.Translate(0f, -Time.deltaTime * 10f, 0f);
-            if (Physics.Raycast(transform.position, -Vector3.up, out hit))
-                distanceToGround = hit.distance;
+            //if (Physics.Raycast(transform.position, -Vector3.up, out hit))
+            //    distanceToGround = hit.distance;
             //Debug.Log(distanceToGround.ToString());
-            if (distanceToGround < 0.5f)
-            {
-                deadState = DeadState.HITGROUND;
-                animation.Play("FallingToHitTheFloor");
-                deadTime = Time.time;
-            }
+            //if (distanceToGround < 0.5f)
+            //{
+            //    deadState = DeadState.HITGROUND;
+            //    animation.Play("FallingToHitTheFloor");
+            //    deadTime = Time.time;
+           // }
         }
         if (deadState == DeadState.HITGROUND && Time.time > deadTime + 0.4f)
         {
