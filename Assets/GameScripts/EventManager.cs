@@ -101,12 +101,22 @@ public class EventManager : MonoBehaviour
 	{        
 		Vector3 fpcPosition = firstPersonController.GetComponent<Transform> ().position;
         Vector3 delta = fpcPosition - shootingPosition.position;
+        Vector3 lookAtPos;
         float magnitude = (delta.x * delta.x) + (delta.z * delta.z);
 
 		if (magnitude > 0.04f) 
 		{
 			//Move the FPC to look at the Focus target.
-		    firstPersonController.transform.LookAt (targetSpawn.position);
+            lookAtPos = targetSpawn.position;
+            //clays have the spawn position right by the player so we have to fudge the view position a bit.
+            if (targetSpawn.GetComponent<TargetSpawn>().targetType == TargetSpawn.TargetType.Clay)
+            {
+                lookAtPos += firstPersonController.transform.forward * 50;                
+            }
+
+            lookAtPos.y += 2; //look up a bit
+
+		    firstPersonController.transform.LookAt (lookAtPos);
 
 			//Move the player to specified shooting position.
 			Vector3 moveDirection = shootingPosition.position - fpcPosition;
@@ -365,9 +375,25 @@ public class EventManager : MonoBehaviour
 
 			target.GetComponent<ShootingTarget> ().escapeTime = targetSpawn.GetComponent<TargetSpawn> ().escapeTime;
 
-			float x = targetSpawn.GetComponent<TargetSpawn> ().transform.position.x + (float)Random.Range (0, 2 * targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.x - targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.x);
-			float y = targetSpawn.GetComponent<TargetSpawn> ().transform.position.y + (float)Random.Range (0, 2 * targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.y - targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.y);
-			float z = targetSpawn.GetComponent<TargetSpawn> ().transform.position.z + (float)Random.Range (0, 2 * targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.z - targetSpawn.GetComponent<TargetSpawn> ().spawnSpan.z);
+            //positions are in world coordinates but the player can turn all around and blinds 
+            //are not aligned to world axes. So, the spawn X,Y,Z should be in local player coordinates
+            //based on the player's view. This'll look odd but trust me on this one, it works.
+            //first get our absolute offsets in X, Y, Z
+            float x = (float)Random.Range(0, targetSpawn.GetComponent<TargetSpawn>().spawnSpan.x) - (targetSpawn.GetComponent<TargetSpawn>().spawnSpan.x / 2f);
+            float y = (float)Random.Range(0, targetSpawn.GetComponent<TargetSpawn>().spawnSpan.y) - (targetSpawn.GetComponent<TargetSpawn>().spawnSpan.y / 2f);
+            float z = (float)Random.Range(0, targetSpawn.GetComponent<TargetSpawn>().spawnSpan.z) - (targetSpawn.GetComponent<TargetSpawn>().spawnSpan.z / 2f);
+
+            //Then transform them based on local X, Y, Z from the point of view of the player
+            Vector3 xVector = x * firstPersonController.transform.right;
+            Vector3 yVector = y * firstPersonController.transform.up;
+            Vector3 zVector = z * firstPersonController.transform.forward;
+            //Then combine all those vectors together to get the total X, Y, Z offset in world coordinates
+            Vector3 combinedVector = xVector + yVector + zVector;
+
+            //and apply the offset, once again this is now in world coordinates
+            x = combinedVector.x + targetSpawn.GetComponent<TargetSpawn>().transform.position.x;
+            y = combinedVector.y + targetSpawn.GetComponent<TargetSpawn>().transform.position.y;
+            z = combinedVector.z + targetSpawn.GetComponent<TargetSpawn>().transform.position.z;
 
 			targetsInPlayList.Add (Instantiate (target, new Vector3 (x, y, z), Quaternion.identity) as Transform);
 		}

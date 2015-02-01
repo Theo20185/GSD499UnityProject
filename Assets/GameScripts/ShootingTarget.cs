@@ -6,21 +6,23 @@ using System.Collections;
 //DO NOT INSTANTIATE THINGS OFF OF THE SCREEN. DONT DO IT! I MEAN IT!
 
 public class ShootingTarget : MonoBehaviour {
-    //these next three can be modified to change the difficulty of this duck type.
+    //these next four can be modified to change the difficulty of this duck type.
     public Color duckColor; //red, green, black, white, doesn't matter. God loves them all the same.
     public float escapeTime; //how long will duck fly around before escaping?
     public float decisionTiming; //how often this sort of duck will update its decisions
     public float duckSpeed; //how quick does this duck fly?
 
-    protected float startTime; //when was this duck spawned into being?
-    protected float lastActionTime; //last time we made a decision
+    protected float startTime; //when was this thing spawned into being?
+    protected float lastActionTime; //last time we made a decision - if we're a duck
 
+    //more duck specific stuff
     private bool isEscaping; //sweet freedom!
     private bool isDead; //I think you know what this means for our poor duck
     private float deadTime; //time we started to die
     private bool didInitial; //did we do our initial placement already?
     private bool goingForDecoy; //are we targetting the decoy currently?
 
+    //clay specific stuff
     private bool isClay; //is this a simple clay target instead?
     private bool didShoot; //have we launched the clay yet?
 
@@ -72,12 +74,14 @@ public class ShootingTarget : MonoBehaviour {
         }
         else
         {
-            Vector3 clayPos = player.transform.position;
+            //clay position should be properly set by event manager so don't try to move it here.
+            //Vector3 clayPos = player.transform.position;
             startTime = Time.time;
-            Vector3 forwardplayer = player.transform.forward;
-            clayPos += (forwardplayer * 2); //start decoy just a short distance in front of the player.
-            clayPos.y -= 1; //also down a bit so it appears that it launched from below somewhere
-            transform.position = clayPos;
+            isDead = false;     
+            //Vector3 forwardplayer = player.transform.forward;
+            //clayPos += (forwardplayer * 2); //start decoy just a short distance in front of the player.
+            //clayPos.y -= 1; //also down a bit so it appears that it launched from below somewhere
+            //transform.position = clayPos;
         }
     }
 
@@ -174,12 +178,19 @@ public class ShootingTarget : MonoBehaviour {
         {
             if (!didShoot)
             {
+                //Vector3 forwardplayer = player.transform.forward;
                 Rigidbody rigidbody = GetComponent<Rigidbody>();
                 //We're about to do a single push so it has to be pretty hard
-                Vector3 forceShoot = player.transform.forward * 1000; //push in front of us hard
-                forceShoot.y += 600; //add some upward motion too.
+                Vector3 forceShoot = player.transform.forward * 450; //push in front of us hard
+                forceShoot.y += 500; //add some upward motion too.
                 rigidbody.AddForce(forceShoot);
                 didShoot = true; //no mo' shoving
+            }
+            if (Time.time > (startTime + escapeTime))
+            {
+                Debug.Log("Escape!");
+                isEscaping = true; //inhibits calling this code more than once
+                DestroyObject(this.gameObject); //clay is no more
             }
         }
     }
@@ -233,9 +244,12 @@ public class ShootingTarget : MonoBehaviour {
     public void Die()
     {
         isDead = true;
-        deadState = DeadState.DYING;
-        deadTime = Time.time;
-        animation.Play("inAirDeath");
+        if (!isClay)
+        {
+            deadState = DeadState.DYING;
+            deadTime = Time.time;
+            animation.Play("inAirDeath");
+        }
     }
 
     private void deadUpdate()
@@ -287,7 +301,9 @@ public class ShootingTarget : MonoBehaviour {
 	{
 		get
 		{
-			return deadState == DeadState.HITGROUND && Time.time > deadTime + 0.4f;
+            if (!isClay)
+                return deadState == DeadState.HITGROUND && Time.time > deadTime + 0.4f;
+            else return isDead;
 		}
 	}
 
