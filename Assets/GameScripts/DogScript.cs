@@ -4,9 +4,11 @@ using System.Collections;
 public class DogScript : MonoBehaviour {
 
 	public GameObject firstPersonController;
+	public GameObject duck;
 	public AudioClip dogSingleBark;
 	public AudioClip dogBark;
 	public AudioClip dogLaughter;
+	public AudioClip duckCaptured;
 
 	private Transform target;			//final target to travel to
 	private float travelSpeed;			//final travel speed
@@ -38,6 +40,7 @@ public class DogScript : MonoBehaviour {
 	private GameObject nearestTent;
 	
 	private SkinnedMeshRenderer dogMeshRender;
+	private SkinnedMeshRenderer deadDuck;
 
 	public int nextStage;	//need to change to one when done
 
@@ -55,11 +58,13 @@ public class DogScript : MonoBehaviour {
 	private bool runnigBackToPlayer = false;
 	private bool walkingBackToPlayer = false;
 	private bool dogLayingDown = false;
+	private bool dogWithDuck = false;
 
 	// Use this for initialization
 	private void Start () {
 
 		dogMeshRender = GameObject.Find ("dalmatynczyk1").GetComponent<SkinnedMeshRenderer>();
+		deadDuck = GameObject.Find ("DUCK").GetComponent<SkinnedMeshRenderer>();
 
 		temp1 = GameObject.Find ("DogTarget1");
 		temp2 = GameObject.Find ("DogTarget2");
@@ -207,19 +212,23 @@ public class DogScript : MonoBehaviour {
 
 
 		//dog animations
-		if (!dogWalking && !dogRunning && !dogJumping && !dogLaughing && !returningPlayer) {
-				animation.Play ("Idled");
-		} else {
+		if (!dogWalking && !dogRunning && !dogJumping && !dogLaughing && !returningPlayer && !dogWithDuck) {
+			animation.Play ("Idled", PlayMode.StopAll);
+		} else if(!dogLaughing && !dogWithDuck){
 			//look at code
-			tempTarget.x = target.position.x;		//use target's x and z
-			tempTarget.z = target.position.z;
-			tempTarget.y = transform.position.y;	//use this object's y value
-			transform.LookAt(tempTarget);
+			//tempTarget.x = target.position.x;		
+			//tempTarget.z = target.position.z;
+			//tempTarget.y = transform.position.y;	
+			//transform.LookAt(tempTarget);
 		}
 	
 		if (dogWalking) {
 			float step = travelSpeed * Time.deltaTime;
 			transform.position = Vector3.MoveTowards (transform.position, target.position, step);
+			tempTarget.x = target.position.x;		
+			tempTarget.z = target.position.z;
+			tempTarget.y = transform.position.y;	
+			transform.LookAt(tempTarget);
 			animation.Play ("Walk", PlayMode.StopAll);
 			if(transform.position == target.position){
 				//print ("reached target");
@@ -231,6 +240,10 @@ public class DogScript : MonoBehaviour {
 		if (dogRunning) {
 			float step = travelSpeed * Time.deltaTime;
 			transform.position = Vector3.MoveTowards (transform.position, target.position, step);
+			tempTarget.x = target.position.x;		
+			tempTarget.z = target.position.z;
+			tempTarget.y = transform.position.y;	
+			transform.LookAt(tempTarget);
 			animation.Play ("Run", PlayMode.StopAll);
 			if(transform.position == target.position){
 				dogRunning = false;
@@ -242,6 +255,10 @@ public class DogScript : MonoBehaviour {
 		if (dogJumping) {
 			float step = travelSpeed * Time.deltaTime;
 			transform.position = Vector3.MoveTowards (transform.position, target.position, step);
+			tempTarget.x = target.position.x;		
+			tempTarget.z = target.position.z;
+			tempTarget.y = transform.position.y;	
+			transform.LookAt(tempTarget);
 			animation.Play ("Jump Low", PlayMode.StopAll);
 			if(transform.position == target.position){
 				dogJumping = false;
@@ -253,11 +270,25 @@ public class DogScript : MonoBehaviour {
 		if (dogLaughing) {
 			animation["Hit Front"].speed = 6f;
 			animation.Play ("Hit Front", PlayMode.StopAll);
-			transform.LookAt(firstPersonController.transform);
+			tempTarget.x = firstPersonController.transform.position.x;		
+			tempTarget.z = firstPersonController.transform.position.z;
+			tempTarget.y = transform.position.y;	
+			transform.LookAt(tempTarget);
 			if(Time.time >= (timeSet + 1)){
 				dogLaughing = false;
 				animationStart = false;
 			 }
+		}
+
+		if (dogWithDuck) {
+			animation.Play ("Idled", PlayMode.StopAll);
+			//animation.Stop();
+			//duck.animation.Stop ();
+			tempTarget.x = firstPersonController.transform.position.x;		
+			tempTarget.z = firstPersonController.transform.position.z;
+			tempTarget.y = transform.position.y;	
+			transform.LookAt(tempTarget);
+			animationStart = false;
 		}
 
 	}
@@ -313,9 +344,26 @@ public class DogScript : MonoBehaviour {
 		nearestTent = location;
 	}
 
+	public void dogReady (){
+
+		if(!animationStart){
+			if (!eventStarted) {
+				dogJump();
+			}
+			else{
+				dogWithDuck = false;
+				dogMeshRender.enabled = false;
+				deadDuck.enabled = false;
+			}
+		}
+
+	}
+
 	public void moveToNextStage(){
 		if (eventStarted) {
+			dogWithDuck = false;
 			eventStarted = false;
+			deadDuck.enabled = false;
 			dogMeshRender.enabled = true;
 			dogRunning = false;
 			dogWalking = false;
@@ -336,11 +384,19 @@ public class DogScript : MonoBehaviour {
 		dogRunning = true;
 		StartCoroutine (playBarking ());
 	}
+
+	public void dogCaptureDuck(){
+
+		dogWithDuck = true;
+		dogMeshRender.enabled = true;
+		deadDuck.enabled = true;
+		audio.clip = duckCaptured;
+		audio.Play ();
+	}
 	
 	public void dogJump(){
 
 		if (animationStart) return;
-
 		animationStart = true;
 
 		switch (nextStage) {
@@ -367,7 +423,7 @@ public class DogScript : MonoBehaviour {
 		travelSpeed = 5;
 		dogJumping = true;
 		eventStarted = true;
-		StartCoroutine (playSingleBark ());
+		StartCoroutine (playSingleBark ());																
 	}
 
 	public void dogLaugh(){
@@ -381,6 +437,7 @@ public class DogScript : MonoBehaviour {
 		timeSet = Time.time;
 		dogLaughing = true;
 		StartCoroutine (playLaugh ());
+
 	}
 
 	private IEnumerator playSingleBark(){

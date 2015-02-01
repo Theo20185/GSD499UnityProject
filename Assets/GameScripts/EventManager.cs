@@ -180,7 +180,7 @@ public class EventManager : MonoBehaviour
 		countdownTimer.text = timer > 0 ? "Round " + roundNumber + "\n" + timer.ToString ("N2") : "Round " + roundNumber + "\nGO!";
 
 		//call the dog jump animation
-		dogPrefab.GetComponent<DogScript>().dogJump ();
+		dogPrefab.GetComponent<DogScript>().dogReady ();
 
 		if (timer < -2)
 			InitializeUpdateEvent ();
@@ -276,6 +276,9 @@ public class EventManager : MonoBehaviour
 		roundResults.text = "Round " + roundNumber + ": Bagged " + targetsShotRound + "!";
 		stage = EventStage.ShowRoundResults;
 		timer = 2f;
+
+		//call the dog jump laugh
+		if(targetsShotRound != 0 ) dogPrefab.GetComponent<DogScript>().dogCaptureDuck ();
 	}
 
 	private void ShowRoundResults()
