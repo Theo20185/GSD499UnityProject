@@ -18,6 +18,8 @@ public class ShootingTarget : MonoBehaviour {
     private bool isEscaping; //sweet freedom!
     private bool isDead; //I think you know what this means for our poor duck
     private float deadTime; //time we started to die
+    private bool didInitial; //did we do our initial placement already?
+    private bool goingForDecoy; //are we targetting the decoy currently?
 
     private bool isClay; //is this a simple clay target instead?
     private bool didShoot; //have we launched the clay yet?
@@ -42,7 +44,7 @@ public class ShootingTarget : MonoBehaviour {
     private GameObject decoy;
 
     private Quaternion targetVector; //the travel vector we want to achieve.
-    private Vector3 targetPos;
+    private Vector3 targetPos; //where we are heading toward
 
     public void Start()
     {
@@ -65,8 +67,8 @@ public class ShootingTarget : MonoBehaviour {
             lastActionTime = startTime - 10f;
             Renderer thisRenderer = this.GetComponentInChildren<Renderer>();
             thisRenderer.material.color = duckColor;
-            //transform.rotation = Quaternion.identity;
-            //SetNewHeading(true);
+            didInitial = false;
+            goingForDecoy = false;
         }
         else
         {
@@ -74,7 +76,7 @@ public class ShootingTarget : MonoBehaviour {
             startTime = Time.time;
             Vector3 forwardplayer = player.transform.forward;
             clayPos += (forwardplayer * 2); //start decoy just a short distance in front of the player.
-            clayPos.y -= 1; //also down a bit so it appears that the player threw it from their hands
+            clayPos.y -= 1; //also down a bit so it appears that it launched from below somewhere
             transform.position = clayPos;
         }
     }
@@ -114,7 +116,15 @@ public class ShootingTarget : MonoBehaviour {
                     quack.Play();
                     Debug.Log("Decision");
                     lastActionTime = Time.time;
-                    SetNewHeading();
+                    if (didInitial)
+                    {
+                        SetNewHeading(false);
+                    }
+                    else //causes an immediate course change
+                    {
+                        SetNewHeading(true);
+                        didInitial = true;
+                    }
                 }
 
                 //how far away from the target are we?
@@ -177,18 +187,28 @@ public class ShootingTarget : MonoBehaviour {
     //Find view frustum and set a new random point to head to within a reasonable space in that frustum
     //We're interested in targetting the duck anywhere on the screen and within a certain distance
     //of the camera.
+    //But, if there is a decoy we alternate targetting that and flying around
     private void SetNewHeading(bool immediate = false)
-    { 
-        //First things first, pick a Z distance from the camera
-        float Z = Random.Range(15f, 40f); 
-        float X = Random.Range(100, camera.camera.pixelWidth - 100);
-        float Y = Random.Range((camera.camera.pixelHeight / 2f), camera.camera.pixelHeight - 100);
-        targetPos.x = X;
-        targetPos.y = Y;
-        targetPos.z = Z;
-        Debug.Log("Before: " + targetPos.ToString());
-        targetPos = camera.camera.ScreenToWorldPoint(targetPos);
-        Debug.Log("After: " + targetPos.ToString());
+    {
+        if (decoy == null || goingForDecoy == true)
+        {
+            float Z = Random.Range(15f, 40f);
+            float X = Random.Range(100, camera.camera.pixelWidth - 100);
+            float Y = Random.Range((camera.camera.pixelHeight * 0.66f), camera.camera.pixelHeight - 110);
+            targetPos.x = X;
+            targetPos.y = Y;
+            targetPos.z = Z;
+            Debug.Log("Before: " + targetPos.ToString());
+            targetPos = camera.camera.ScreenToWorldPoint(targetPos);
+            Debug.Log("After: " + targetPos.ToString());
+            goingForDecoy = false;
+        }
+        else //would only get here is there was a decoy and we were not previously going for it
+        {
+            targetPos = decoy.transform.position;
+            targetPos.y += 1.5f; //aim for 1.5 above the decoy
+            goingForDecoy = true;
+        }
 
         UpdateTargetVector();
         if (immediate) transform.rotation = targetVector;
