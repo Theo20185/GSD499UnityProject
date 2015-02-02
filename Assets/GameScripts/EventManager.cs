@@ -75,9 +75,7 @@ public class EventManager : MonoBehaviour
 			CountDownToEvent ();
         if (stage == EventStage.EventActive)
         {
-
-            	checkKeys();
-            
+			checkKeys();
 			UpdateEvent();
         }
 		if (stage == EventStage.ShowRoundResults)
@@ -275,22 +273,23 @@ public class EventManager : MonoBehaviour
 			}
 		}
 
-		float flyAwayTime = (targetSpawn.GetComponent<TargetSpawn> ().escapeTime - ((-1 * timer) + 0.5f));
-
-		if (flyAwayTime < 0) 
+		if (targetSpawn.GetComponent<TargetSpawn> ().targetType != TargetSpawn.TargetType.Clay) 
 		{
-			Debug.Log ("Fly Away Time: " + flyAwayTime.ToString ("N2"));
+			float flyAwayTime = (targetSpawn.GetComponent<TargetSpawn> ().escapeTime - ((-1 * timer) + 0.5f));
 
-			flyAway.enabled = true;
-			flyAwayTimer.text = "Time: 0.00";
+			if (flyAwayTime < 0) {
+					Debug.Log ("Fly Away Time: " + flyAwayTime.ToString ("N2"));
 
-			//call the dog jump laugh
-			dogPrefab.GetComponent<DogScript>().dogLaugh ();
+					flyAway.enabled = true;
+					flyAwayTimer.text = "Time: 0.00";
+
+					//call the dog jump laugh
+					dogPrefab.GetComponent<DogScript> ().dogLaugh ();
+			} else if (targetsInPlay == true && allTargetsAreDead == true)
+					flyAwayTimer.text = "Time: 0.00";
+			else
+					flyAwayTimer.text = "Time: " + flyAwayTime.ToString ("N2");
 		}
-		else if (targetsInPlay == true && allTargetsAreDead == true)
-			flyAwayTimer.text = "Time: 0.00";
-		else
-			flyAwayTimer.text = "Time: " + flyAwayTime.ToString ("N2");
 
 		if (targetsInPlayList.Count == 0 && targetsInPlay == true) 
 		{
@@ -420,7 +419,10 @@ public class EventManager : MonoBehaviour
 				target = duckPrefabHard;
 
             if (targetSpawn.GetComponent<TargetSpawn>().targetType == TargetSpawn.TargetType.Clay)
+			{
                 target = clayPrefab;
+				flyAwayTimer.enabled = false;
+			}
 
 			target.GetComponent<ShootingTarget> ().escapeTime = targetSpawn.GetComponent<TargetSpawn> ().escapeTime;
 
