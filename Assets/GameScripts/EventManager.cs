@@ -52,6 +52,7 @@ public class EventManager : MonoBehaviour
 	private List<Transform> targetsInPlayList;
     private int numDecoys; //how many decoys the player has
     private int numCalls; //how many duck calls the player has
+    private float decoyTime;
 
 	private int shells;
 	
@@ -99,7 +100,8 @@ public class EventManager : MonoBehaviour
             if (numDecoys > 0)
             {
                 numDecoys--;
-                Instantiate(duckDecoyPrefab, Vector3.zero, Quaternion.identity);
+                GameObject decoy = (GameObject)Instantiate(duckDecoyPrefab, Vector3.zero, Quaternion.identity);
+                decoyTime = decoy.GetComponent<Decoy>().decoyLife;
             }
         }
     }
@@ -242,7 +244,8 @@ public class EventManager : MonoBehaviour
 
 	private void UpdateEvent()
 	{
-		timer = timer - Time.deltaTime;
+        float dTime = Time.deltaTime;
+		timer = timer - dTime;
 
 		if (timer <= 0 && targetsInPlay == false)
 			SpawnTargets ();

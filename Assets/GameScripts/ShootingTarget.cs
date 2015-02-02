@@ -238,13 +238,17 @@ public class ShootingTarget : MonoBehaviour {
     public void OnTriggerEnter(Collider other)
     {
         Debug.Log(other.name);
-        if (!isClay && (deadState == DeadState.FALLING || deadState == DeadState.DYING))
-        { 
-            if (other.name.Contains("Lake"))
-            { //splash if on a lake
-                Instantiate(splashFX, transform.position, Quaternion.identity);
+        if (!isClay)
+        {
+            if ((deadState == DeadState.FALLING || deadState == DeadState.DYING))
+            {
+                if (other.name.Contains("Lake"))
+                { //splash if on a lake
+                    Instantiate(splashFX, transform.position, Quaternion.identity);
+                }
+                deadState = DeadState.HITGROUND;
             }
-            deadState = DeadState.HITGROUND;
+            else SetNewHeading(); //if we hit the water or land and aren't dying then the path is messed up
         }
 
     }
