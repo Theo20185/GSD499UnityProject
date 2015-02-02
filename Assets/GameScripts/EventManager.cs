@@ -19,7 +19,7 @@ public class EventManager : MonoBehaviour
 	public Transform duckPrefabEasy;
 	public Transform duckPrefabHard;
     public Transform clayPrefab;
-    public Transform duckCall;
+    public Transform duckCallPrefab;
     public Transform duckDecoyPrefab;
 	public GUIText requirements;
 	public GUIText countdownTimer;
@@ -31,6 +31,8 @@ public class EventManager : MonoBehaviour
 	public GUITexture shotgunShell;
 	public GUITexture trophy;
 	public GUITexture deadDuck;
+    public GUITexture duckCallTexture;
+    public GUITexture duckDecoyTexture;
 
 	//Flags for different stages of events.
 	private enum EventStage
@@ -48,6 +50,9 @@ public class EventManager : MonoBehaviour
 	private int targetsShotRound;
 	private bool targetsInPlay;
 	private List<Transform> targetsInPlayList;
+    private int numDecoys; //how many decoys the player has
+    private int numCalls; //how many duck calls the player has
+    private float decoyTime;
 
 	private int shells;
 	
@@ -55,6 +60,8 @@ public class EventManager : MonoBehaviour
 	public void Start () 
 	{
 		targetsInPlayList = new List<Transform> ();
+        numDecoys = 1;
+        numCalls = 1;
 	}
 	
 	// Update is called once per frame
@@ -66,13 +73,38 @@ public class EventManager : MonoBehaviour
 			ShowRequirements ();
 		if (stage == EventStage.CountdownToEvent)
 			CountDownToEvent ();
-		if (stage == EventStage.EventActive)
-			UpdateEvent ();
+        if (stage == EventStage.EventActive)
+        {
+            checkKeys();
+            UpdateEvent();
+        }
 		if (stage == EventStage.ShowRoundResults)
 			ShowRoundResults ();
 		if (stage == EventStage.ShowEventResults)
-			ShowEventResults ();
+			ShowEventResults ();        
 	}
+
+    private void checkKeys()
+    {
+        if (Input.GetKeyUp(KeyCode.C)) //spawn a duck call
+        {
+            if (numCalls > 0)
+            {
+                numCalls--;
+                DuckCall callScript = duckCallPrefab.gameObject.GetComponent<DuckCall>();
+                callScript.startDuckCall();
+            }
+        }
+        if (Input.GetKeyUp(KeyCode.V)) //spawn a decoy
+        {
+            if (numDecoys > 0)
+            {
+                numDecoys--;
+                GameObject decoy = (GameObject)Instantiate(duckDecoyPrefab, Vector3.zero, Quaternion.identity);
+                decoyTime = decoy.GetComponent<Decoy>().decoyLife;
+            }
+        }
+    }
 
 	public void OnGUI()
 	{
@@ -212,7 +244,8 @@ public class EventManager : MonoBehaviour
 
 	private void UpdateEvent()
 	{
-		timer = timer - Time.deltaTime;
+        float dTime = Time.deltaTime;
+		timer = timer - dTime;
 
 		if (timer <= 0 && targetsInPlay == false)
 			SpawnTargets ();
@@ -281,7 +314,14 @@ public class EventManager : MonoBehaviour
 
 		GUI.TextArea (new Rect ((Screen.width / 2) + (trophy.texture.width / 2) + 55, Screen.height - 110, trophy.texture.width, trophy.texture.height), targetSpawn.GetComponent<TargetSpawn> ().targetsNeeded.ToString ("N0"));
 		GUI.DrawTexture (new Rect((Screen.width / 2) + (trophy.texture.width / 2) + 55, Screen.height - 110, trophy.texture.width, trophy.texture.height), trophy.texture);
+
+        GUI.TextArea(new Rect((Screen.width / 2) + (duckCallTexture.texture.width / 2) + 255, Screen.height - 110, duckCallTexture.texture.width, duckCallTexture.texture.height), numCalls.ToString("N0"));
+        GUI.DrawTexture(new Rect((Screen.width / 2) + (duckCallTexture.texture.width / 2) + 255, Screen.height - 110, duckCallTexture.texture.width, duckCallTexture.texture.height), duckCallTexture.texture);
+
+        GUI.TextArea(new Rect((Screen.width / 2) + (duckDecoyTexture.texture.width / 2) - 355, Screen.height - 110, duckDecoyTexture.texture.width, duckDecoyTexture.texture.height), numDecoys.ToString("N0"));
+        GUI.DrawTexture(new Rect((Screen.width / 2) + (duckDecoyTexture.texture.width / 2) - 355, Screen.height - 110, duckDecoyTexture.texture.width, duckDecoyTexture.texture.height), duckDecoyTexture.texture);        
 	}
+
 
 	private void InitializeShowRoundResults()
 	{
