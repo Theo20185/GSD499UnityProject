@@ -75,8 +75,10 @@ public class EventManager : MonoBehaviour
 			CountDownToEvent ();
         if (stage == EventStage.EventActive)
         {
-            checkKeys();
-            UpdateEvent();
+
+            	checkKeys();
+            
+			UpdateEvent();
         }
 		if (stage == EventStage.ShowRoundResults)
 			ShowRoundResults ();
@@ -86,24 +88,23 @@ public class EventManager : MonoBehaviour
 
     private void checkKeys()
     {
-        if (Input.GetKeyUp(KeyCode.C)) //spawn a duck call
-        {
-            if (numCalls > 0)
-            {
-                numCalls--;
-                DuckCall callScript = duckCallPrefab.gameObject.GetComponent<DuckCall>();
-                callScript.startDuckCall();
-            }
-        }
-        if (Input.GetKeyUp(KeyCode.V)) //spawn a decoy
-        {
-            if (numDecoys > 0)
-            {
-                numDecoys--;
-                GameObject decoy = (GameObject)Instantiate(duckDecoyPrefab, Vector3.zero, Quaternion.identity);
-                decoyTime = decoy.GetComponent<Decoy>().decoyLife;
-            }
-        }
+		if (targetSpawn.GetComponent<TargetSpawn> ().targetType != TargetSpawn.TargetType.Clay) 
+		{
+			if (Input.GetKeyUp (KeyCode.C)) { //spawn a duck call
+					if (numCalls > 0) {
+							numCalls--;
+							DuckCall callScript = duckCallPrefab.gameObject.GetComponent<DuckCall> ();
+							callScript.startDuckCall ();
+					}
+			}
+			if (Input.GetKeyUp (KeyCode.V)) { //spawn a decoy
+					if (numDecoys > 0) {
+							numDecoys--;
+							GameObject decoy = (GameObject)Instantiate (duckDecoyPrefab, Vector3.zero, Quaternion.identity);
+							decoyTime = decoy.GetComponent<Decoy> ().decoyLife;
+					}
+			}
+		}
     }
 
 	public void OnGUI()
