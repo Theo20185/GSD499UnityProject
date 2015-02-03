@@ -301,8 +301,6 @@ public class EventManager : MonoBehaviour
 				flyAway.enabled = true;
 				flyAwayTimer.text = "Time: 0.00";
 
-				//call the dog jump laugh
-				dogPrefab.GetComponent<DogScript> ().dogLaugh ();
 			} 
 			else if (targetsInPlay == true && allTargetsAreDead == true)
 					flyAwayTimer.text = "Time: 0.00";
@@ -353,6 +351,8 @@ public class EventManager : MonoBehaviour
 
 		//call the dog jump laugh
 		if(targetsShotRound != 0 ) dogPrefab.GetComponent<DogScript>().dogCaptureDuck ();
+        //call the dog jump laugh
+        else dogPrefab.GetComponent<DogScript>().dogLaugh();
 	}
 
 	private void ShowRoundResults()
@@ -516,4 +516,15 @@ public class EventManager : MonoBehaviour
 			emptyGun.audio.Play ();
 		}
 	}
+
+    public void addDecoy()
+    {
+        numDecoys++;
+    }
+
+    public void addDuckCall()
+    {
+        numCalls++;
+    }
+
 }
