@@ -10,10 +10,12 @@ public class MainMenuManager : MonoBehaviour {
 	public GameObject duck;
 
 	private bool showMenu = true;
+	private int highScore;
 
 	// Use this for initialization
-	void Start () {
-		
+	void Start () 
+	{
+		highScore = PlayerPrefs.GetInt ("ThatDuckingGame_HighScore", 0);
 		ShowMainMenu ();
 	}
 	
@@ -51,7 +53,7 @@ public class MainMenuManager : MonoBehaviour {
 				gameCredits.GetComponent<GameCredits> ().CreditScreen ();
 			}
 
-			GUI.Label (new Rect (100, 500, 400, 100), "Top Score: 120,000");
+			GUI.Label (new Rect (100, 500, 400, 100), "High Score: " + highScore);
 			GUI.EndGroup ();
 		
 			GUI.depth = 1;
