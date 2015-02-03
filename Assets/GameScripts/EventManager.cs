@@ -27,6 +27,8 @@ public class EventManager : MonoBehaviour
 	public GUIText flyAwayTimer;
 	public GUIText roundResults;
 	public GUIText eventResults;
+	public GUIText hudScore;
+	public GUIText hudHighScore;
 	public GUITexture crosshair;
 	public GUITexture shotgunShell;
 	public GUITexture trophy;
@@ -53,15 +55,21 @@ public class EventManager : MonoBehaviour
     private int numDecoys; //how many decoys the player has
     private int numCalls; //how many duck calls the player has
     private float decoyTime;
-
 	private int shells;
-	
+	private int score;
+	private int highScore;
+
 	// Use this for initialization
 	public void Start () 
 	{
 		targetsInPlayList = new List<Transform> ();
         numDecoys = 1;
         numCalls = 1;
+		score = 0;
+		highScore = 1000; //TODO Load high score from player prefs.
+
+		hudScore.text = "Score: " + score;
+		hudHighScore.text = "High: " + highScore;
 	}
 	
 	// Update is called once per frame
@@ -286,15 +294,15 @@ public class EventManager : MonoBehaviour
 
             if (dtLeft > flyAwayTime) flyAwayTime = dtLeft;
 
-			if (flyAwayTime < 0) {
-					Debug.Log ("Fly Away Time: " + flyAwayTime.ToString ("N2"));
+			if (flyAwayTime < 0) 
+			{
+				Debug.Log ("Fly Away Time: " + flyAwayTime.ToString ("N2"));
 
-					flyAway.enabled = true;
-					flyAwayTimer.text = "Time: 0.00";
+				flyAway.enabled = true;
+				flyAwayTimer.text = "Time: 0.00";
 
-					//call the dog jump laugh
-					dogPrefab.GetComponent<DogScript> ().dogLaugh ();
-			} else if (targetsInPlay == true && allTargetsAreDead == true)
+			} 
+			else if (targetsInPlay == true && allTargetsAreDead == true)
 					flyAwayTimer.text = "Time: 0.00";
 			else
 					flyAwayTimer.text = "Time: " + flyAwayTime.ToString ("N2");
@@ -343,6 +351,8 @@ public class EventManager : MonoBehaviour
 
 		//call the dog jump laugh
 		if(targetsShotRound != 0 ) dogPrefab.GetComponent<DogScript>().dogCaptureDuck ();
+        //call the dog jump laugh
+        else dogPrefab.GetComponent<DogScript>().dogLaugh();
 	}
 
 	private void ShowRoundResults()
@@ -478,6 +488,14 @@ public class EventManager : MonoBehaviour
 						targetsInPlayList[targetsInPlayIndex].GetComponent<ShootingTarget>().Die ();
 						targetsShotTotal++;
 						targetsShotRound++;
+						score += targetSpawn.GetComponent<TargetSpawn>().targetScore;
+						hudScore.text = "Score: " + score;
+
+						if (score > highScore)
+						{
+							highScore = score;
+							hudHighScore.text = "High: " + highScore;
+						}
 					}
 				}
 			}
