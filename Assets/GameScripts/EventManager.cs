@@ -488,4 +488,15 @@ public class EventManager : MonoBehaviour
 			emptyGun.audio.Play ();
 		}
 	}
+
+    public void addDecoy()
+    {
+        numDecoys++;
+    }
+
+    public void addDuckCall()
+    {
+        numCalls++;
+    }
+
 }
