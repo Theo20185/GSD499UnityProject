@@ -12,6 +12,7 @@ public class TargetSpawn : MonoBehaviour
 	public TargetType targetType;
 	public int escapeTime;
 	public int targetsPerSpawn;
+	public int targetScore;
 	public int spawnRounds;
 	public Vector3 spawnSpan;
 }
