@@ -9,9 +9,7 @@ public class GameOver : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		Color gameOverColor = gameOverText.font.material.color;
-		gameOverColor.a = 0;
-		Debug.Log ("GameOverText.color.a start: " + gameOverText.font.material.color.a);
+		gameOverText.color = new Color (1, 1, 1, 0);
 		timer = 0;
 	}
 	
@@ -19,11 +17,8 @@ public class GameOver : MonoBehaviour
 	void Update () 
 	{
 		timer += Time.smoothDeltaTime;
-	
-		Debug.Log (gameOverText.color.a.ToString ());
 
-		Color gameOverColor = gameOverText.font.material.color;
-		gameOverColor.a = (timer / 3f);
+		gameOverText.color = new Color (1, 1, 1, timer / 3f);
 
 		if (timer >= 5f)
 			Application.LoadLevel ("MainMenu");
