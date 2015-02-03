@@ -104,7 +104,7 @@ public class DogScript : MonoBehaviour {
 
 		if (!playerMoving && !eventStarted) {
 			//print ("player not moving");
-			if (Time.time > (timeTracker + 5)) {
+			if (Time.time > (timeTracker + 10)) {
 
 				returningPlayer = true;
 				//print ("player not moving");
@@ -370,6 +370,8 @@ public class DogScript : MonoBehaviour {
 
 	public void moveToNextStage(){
 		if (eventStarted) {
+			rigidbody.constraints = RigidbodyConstraints.None;
+			rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
 			dogWithDuck = false;
 			eventStarted = false;
 			deadDuck.enabled = false;
@@ -397,6 +399,7 @@ public class DogScript : MonoBehaviour {
 	public void dogCaptureDuck(){
 
 		if(!clayEvent){
+			rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
 			dogWithDuck = true;
 			dogMeshRender.enabled = true;
 			deadDuck.enabled = true;
@@ -448,6 +451,7 @@ public class DogScript : MonoBehaviour {
 		animationStart = true;
 
 		if(!clayEvent){
+			rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
 			dogMeshRender.enabled = true;
 			timeSet = Time.time;
 			dogLaughing = true;
