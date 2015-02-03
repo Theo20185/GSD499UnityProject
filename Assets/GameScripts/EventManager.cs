@@ -86,24 +86,27 @@ public class EventManager : MonoBehaviour
 
     private void checkKeys()
     {
-        if (Input.GetKeyUp(KeyCode.C)) //spawn a duck call
+        if (targetSpawn.GetComponent<TargetSpawn>().targetType != TargetSpawn.TargetType.Clay)
         {
-            if (numCalls > 0 && roundNumber > 1)
+            if (Input.GetKeyUp(KeyCode.C)) //spawn a duck call
             {
-                numCalls--;
-                DuckCall callScript = duckCallPrefab.gameObject.GetComponent<DuckCall>();
-                callScript.startDuckCall();
-                roundNumber--; //crude way to implement our desired functionality. Removes one round so we can get an extra one
+                if (numCalls > 0 && roundNumber > 1)
+                {
+                    numCalls--;
+                    DuckCall callScript = duckCallPrefab.gameObject.GetComponent<DuckCall>();
+                    callScript.startDuckCall();
+                    roundNumber--; //crude way to implement our desired functionality. Removes one round so we can get an extra one
+                }
             }
-        }
-        if (Input.GetKeyUp(KeyCode.V)) //spawn a decoy
-        {
-            if (numDecoys > 0)
+            if (Input.GetKeyUp(KeyCode.V)) //spawn a decoy
             {
-                numDecoys--;
-                Transform decoy = (Instantiate(duckDecoyPrefab, Vector3.zero, Quaternion.identity) as Transform);                
-                decoyTime = Time.time + decoy.GetComponent<Decoy>().decoyLife;
-                Debug.Log("Decoy Time" + decoyTime.ToString());
+                if (numDecoys > 0)
+                {
+                    numDecoys--;
+                    Transform decoy = (Instantiate(duckDecoyPrefab, Vector3.zero, Quaternion.identity) as Transform);
+                    decoyTime = Time.time + decoy.GetComponent<Decoy>().decoyLife;
+                    Debug.Log("Decoy Time" + decoyTime.ToString());
+                }
             }
         }
     }
@@ -276,25 +279,26 @@ public class EventManager : MonoBehaviour
 			}
 		}
 
-		float flyAwayTime = (targetSpawn.GetComponent<TargetSpawn> ().escapeTime - ((-1 * timer) + 0.5f));
-        float dtLeft = (decoyTime - Time.time);
+        if (targetSpawn.GetComponent<TargetSpawn> ().targetType != TargetSpawn.TargetType.Clay) 
+ 		{
+		    float flyAwayTime = (targetSpawn.GetComponent<TargetSpawn> ().escapeTime - ((-1 * timer) + 0.5f));
+            float dtLeft = (decoyTime - Time.time);
 
-        if (dtLeft > flyAwayTime) flyAwayTime = dtLeft;
+            if (dtLeft > flyAwayTime) flyAwayTime = dtLeft;
 
-		if (flyAwayTime < 0) 
-		{
-			Debug.Log ("Fly Away Time: " + flyAwayTime.ToString ("N2"));
+			if (flyAwayTime < 0) {
+					Debug.Log ("Fly Away Time: " + flyAwayTime.ToString ("N2"));
 
-			flyAway.enabled = true;
-			flyAwayTimer.text = "Time: 0.00";
+					flyAway.enabled = true;
+					flyAwayTimer.text = "Time: 0.00";
 
-			//call the dog jump laugh
-			dogPrefab.GetComponent<DogScript>().dogLaugh ();
+					//call the dog jump laugh
+					dogPrefab.GetComponent<DogScript> ().dogLaugh ();
+			} else if (targetsInPlay == true && allTargetsAreDead == true)
+					flyAwayTimer.text = "Time: 0.00";
+			else
+					flyAwayTimer.text = "Time: " + flyAwayTime.ToString ("N2");
 		}
-		else if (targetsInPlay == true && allTargetsAreDead == true)
-			flyAwayTimer.text = "Time: 0.00";
-		else
-			flyAwayTimer.text = "Time: " + flyAwayTime.ToString ("N2");
 
 		if (targetsInPlayList.Count == 0 && targetsInPlay == true) 
 		{
