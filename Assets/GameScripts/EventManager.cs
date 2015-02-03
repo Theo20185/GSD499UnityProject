@@ -21,6 +21,7 @@ public class EventManager : MonoBehaviour
     public Transform clayPrefab;
     public Transform duckCallPrefab;
     public Transform duckDecoyPrefab;
+	public Transform fadeOut;
 	public GUIText requirements;
 	public GUIText countdownTimer;
 	public GUIText flyAway;
@@ -66,8 +67,7 @@ public class EventManager : MonoBehaviour
         numDecoys = 1;
         numCalls = 1;
 		score = 0;
-		highScore = 1000; //TODO Load high score from player prefs.
-
+		highScore = PlayerPrefs.GetInt ("ThatDuckingGame_HighScore", 0);
 		hudScore.text = "Score: " + score;
 		hudHighScore.text = "High: " + highScore;
 	}
@@ -406,9 +406,19 @@ public class EventManager : MonoBehaviour
 	{
 		eventResults.enabled = false;
 		stage = EventStage.TransitionOut;
-		//TODO: Set GameManager back to Active if event is passed or GameOver if event failed.
-		//For prototype, just return control to the player.
-		ReturnControl ();
+
+		if (targetsShotTotal < targetSpawn.GetComponent<TargetSpawn> ().targetsNeeded) 
+		{
+			//Event Failed
+			PlayerPrefs.SetInt ("ThatDuckingGame_HighScore", highScore);
+			Instantiate (fadeOut);
+			Application.LoadLevel ("GameOver");
+		} 
+		else 
+		{
+			//Event Passed
+			ReturnControl();
+		}
 	}
 
 	private void DisableControl()
