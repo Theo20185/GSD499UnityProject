@@ -134,7 +134,7 @@ public class ShootingTarget : MonoBehaviour {
 
                 //how far away from the target are we?
                 Vector3 offsetError = targetPos - transform.position;
-                Debug.Log(offsetError.sqrMagnitude.ToString());
+                //Debug.Log(offsetError.sqrMagnitude.ToString());
 
                 //we got close enough to target
                 if (offsetError.sqrMagnitude < 5f)

@@ -88,11 +88,12 @@ public class EventManager : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.C)) //spawn a duck call
         {
-            if (numCalls > 0)
+            if (numCalls > 0 && roundNumber > 1)
             {
                 numCalls--;
                 DuckCall callScript = duckCallPrefab.gameObject.GetComponent<DuckCall>();
                 callScript.startDuckCall();
+                roundNumber--; //crude way to implement our desired functionality. Removes one round so we can get an extra one
             }
         }
         if (Input.GetKeyUp(KeyCode.V)) //spawn a decoy
@@ -100,8 +101,9 @@ public class EventManager : MonoBehaviour
             if (numDecoys > 0)
             {
                 numDecoys--;
-                GameObject decoy = (GameObject)Instantiate(duckDecoyPrefab, Vector3.zero, Quaternion.identity);
-                decoyTime = decoy.GetComponent<Decoy>().decoyLife;
+                Transform decoy = (Instantiate(duckDecoyPrefab, Vector3.zero, Quaternion.identity) as Transform);                
+                decoyTime = Time.time + decoy.GetComponent<Decoy>().decoyLife;
+                Debug.Log("Decoy Time" + decoyTime.ToString());
             }
         }
     }
@@ -275,6 +277,9 @@ public class EventManager : MonoBehaviour
 		}
 
 		float flyAwayTime = (targetSpawn.GetComponent<TargetSpawn> ().escapeTime - ((-1 * timer) + 0.5f));
+        float dtLeft = (decoyTime - Time.time);
+
+        if (dtLeft > flyAwayTime) flyAwayTime = dtLeft;
 
 		if (flyAwayTime < 0) 
 		{
