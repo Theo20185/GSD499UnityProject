@@ -83,8 +83,8 @@ public class EventManager : MonoBehaviour
 			CountDownToEvent ();
         if (stage == EventStage.EventActive)
         {
-			checkKeys();
-			UpdateEvent();
+            checkKeys();
+            UpdateEvent();
         }
 		if (stage == EventStage.ShowRoundResults)
 			ShowRoundResults ();
@@ -94,23 +94,29 @@ public class EventManager : MonoBehaviour
 
     private void checkKeys()
     {
-		if (targetSpawn.GetComponent<TargetSpawn> ().targetType != TargetSpawn.TargetType.Clay) 
-		{
-			if (Input.GetKeyUp (KeyCode.C)) { //spawn a duck call
-					if (numCalls > 0) {
-							numCalls--;
-							DuckCall callScript = duckCallPrefab.gameObject.GetComponent<DuckCall> ();
-							callScript.startDuckCall ();
-					}
-			}
-			if (Input.GetKeyUp (KeyCode.V)) { //spawn a decoy
-					if (numDecoys > 0) {
-							numDecoys--;
-							GameObject decoy = (GameObject)Instantiate (duckDecoyPrefab, Vector3.zero, Quaternion.identity);
-							decoyTime = decoy.GetComponent<Decoy> ().decoyLife;
-					}
-			}
-		}
+        if (targetSpawn.GetComponent<TargetSpawn>().targetType != TargetSpawn.TargetType.Clay)
+        {
+            if (Input.GetKeyUp(KeyCode.C)) //spawn a duck call
+            {
+                if (numCalls > 0 && roundNumber > 1)
+                {
+                    numCalls--;
+                    DuckCall callScript = duckCallPrefab.gameObject.GetComponent<DuckCall>();
+                    callScript.startDuckCall();
+                    roundNumber--; //crude way to implement our desired functionality. Removes one round so we can get an extra one
+                }
+            }
+            if (Input.GetKeyUp(KeyCode.V)) //spawn a decoy
+            {
+                if (numDecoys > 0)
+                {
+                    numDecoys--;
+                    Transform decoy = (Instantiate(duckDecoyPrefab, Vector3.zero, Quaternion.identity) as Transform);
+                    decoyTime = Time.time + decoy.GetComponent<Decoy>().decoyLife;
+                    Debug.Log("Decoy Time" + decoyTime.ToString());
+                }
+            }
+        }
     }
 
 	public void OnGUI()
@@ -281,9 +287,12 @@ public class EventManager : MonoBehaviour
 			}
 		}
 
-		if (targetSpawn.GetComponent<TargetSpawn> ().targetType != TargetSpawn.TargetType.Clay) 
-		{
-			float flyAwayTime = (targetSpawn.GetComponent<TargetSpawn> ().escapeTime - ((-1 * timer) + 0.5f));
+        if (targetSpawn.GetComponent<TargetSpawn> ().targetType != TargetSpawn.TargetType.Clay) 
+ 		{
+		    float flyAwayTime = (targetSpawn.GetComponent<TargetSpawn> ().escapeTime - ((-1 * timer) + 0.5f));
+            float dtLeft = (decoyTime - Time.time);
+
+            if (dtLeft > flyAwayTime) flyAwayTime = dtLeft;
 
 			if (flyAwayTime < 0) 
 			{
@@ -429,10 +438,7 @@ public class EventManager : MonoBehaviour
 				target = duckPrefabHard;
 
             if (targetSpawn.GetComponent<TargetSpawn>().targetType == TargetSpawn.TargetType.Clay)
-			{
                 target = clayPrefab;
-				flyAwayTimer.enabled = false;
-			}
 
 			target.GetComponent<ShootingTarget> ().escapeTime = targetSpawn.GetComponent<TargetSpawn> ().escapeTime;
 
