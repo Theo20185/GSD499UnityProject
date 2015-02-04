@@ -164,8 +164,6 @@ public class EventManager : MonoBehaviour
                 lookAtPos.y += 10; //look up a bit - need more lift because these targets are farther out
             }
 
-            
-
 		    firstPersonController.transform.LookAt (lookAtPos);
 
 			//Move the player to specified shooting position.
@@ -185,16 +183,15 @@ public class EventManager : MonoBehaviour
 		stage = EventStage.ShowRequirements;
 	}
 
-    public string GetTargetType()
-    {
-        string target = targetSpawn.GetComponent<TargetSpawn>().targetType == TargetSpawn.TargetType.Clay ? "Clays" : "Ducks";
-        return target;
-    }
+	public string GetTargetType()
+	{
+		return targetSpawn.GetComponent<TargetSpawn>().targetType == TargetSpawn.TargetType.Clay ? "Clays" : "Ducks";
+	}
 
 	private void ShowRequirements()
 	{
 		timer = timer - Time.deltaTime;
-        string target = GetTargetType();
+		string target = GetTargetType();
 
 		if (timer < 6f && timer >= 4f) 
 		{
@@ -226,6 +223,8 @@ public class EventManager : MonoBehaviour
 		roundNumber++;
 		requirements.enabled = false;
 		roundResults.enabled = false;
+		flyAway.enabled = false;
+		flyAwayTimer.enabled = false;
 		countdownTimer.enabled = true;
 		timer = 3f;
 		shells = 3;
@@ -234,8 +233,6 @@ public class EventManager : MonoBehaviour
 
 	private void CountDownToEvent()
 	{
-		flyAway.enabled = false;
-		flyAwayTimer.enabled = false;
 		timer = timer - Time.deltaTime;
 		countdownTimer.text = timer > 0 ? "Round " + roundNumber + "\n" + timer.ToString ("N2") : "Round " + roundNumber + "\nGO!";
 
@@ -450,7 +447,10 @@ public class EventManager : MonoBehaviour
 				target = duckPrefabHard;
 
             if (targetSpawn.GetComponent<TargetSpawn>().targetType == TargetSpawn.TargetType.Clay)
+			{
                 target = clayPrefab;
+				flyAwayTimer.enabled = false;
+			}
 
 			target.GetComponent<ShootingTarget> ().escapeTime = targetSpawn.GetComponent<TargetSpawn> ().escapeTime;
 
