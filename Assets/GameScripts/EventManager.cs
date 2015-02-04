@@ -334,9 +334,11 @@ public class EventManager : MonoBehaviour
 
         GUI.TextArea(new Rect((Screen.width / 2) + (duckCallTexture.texture.width / 2) + 255, Screen.height - 110, duckCallTexture.texture.width, duckCallTexture.texture.height), numCalls.ToString("N0"));
         GUI.DrawTexture(new Rect((Screen.width / 2) + (duckCallTexture.texture.width / 2) + 255, Screen.height - 110, duckCallTexture.texture.width, duckCallTexture.texture.height), duckCallTexture.texture);
+        GUI.TextArea(new Rect((Screen.width / 2) + (duckCallTexture.texture.width / 2) + 330, Screen.height - 35, 20, 20), "C");
 
         GUI.TextArea(new Rect((Screen.width / 2) + (duckDecoyTexture.texture.width / 2) - 355, Screen.height - 110, duckDecoyTexture.texture.width, duckDecoyTexture.texture.height), numDecoys.ToString("N0"));
-        GUI.DrawTexture(new Rect((Screen.width / 2) + (duckDecoyTexture.texture.width / 2) - 355, Screen.height - 110, duckDecoyTexture.texture.width, duckDecoyTexture.texture.height), duckDecoyTexture.texture);        
+        GUI.DrawTexture(new Rect((Screen.width / 2) + (duckDecoyTexture.texture.width / 2) - 355, Screen.height - 110, duckDecoyTexture.texture.width, duckDecoyTexture.texture.height), duckDecoyTexture.texture);
+        GUI.TextArea(new Rect((Screen.width / 2) + (duckCallTexture.texture.width / 2) - 280, Screen.height - 35, 20, 20), "V");
 	}
 
 
