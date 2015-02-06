@@ -66,9 +66,14 @@ public class EventManager : MonoBehaviour
 		targetsInPlayList = new List<Transform> ();
         numDecoys = 1;
         numCalls = 1;
+
 		score = 0;
 		highScore = PlayerPrefs.GetInt ("ThatDuckingGame_HighScore", 0);
+
+		hudScore.pixelOffset = new Vector2 ((Screen.width / 2) - 10, Screen.height / 2);
 		hudScore.text = "Score: " + score;
+
+		hudHighScore.pixelOffset = new Vector2 ((-1 * Screen.width / 2) + 10, Screen.height / 2);
 		hudHighScore.text = "High: " + highScore;
 	}
 	
