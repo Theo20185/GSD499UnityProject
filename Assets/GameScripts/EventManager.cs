@@ -67,12 +67,16 @@ public class EventManager : MonoBehaviour
         numDecoys = 1;
         numCalls = 1;
 
-		score = 0;
-		highScore = PlayerPrefs.GetInt ("ThatDuckingGame_HighScore", 0);
+		flyAwayTimer.anchor = TextAnchor.UpperCenter;
+		flyAwayTimer.pixelOffset = new Vector2 (0, Screen.height / 2);
 
+		score = 0;
+		hudScore.anchor = TextAnchor.UpperRight;
 		hudScore.pixelOffset = new Vector2 ((Screen.width / 2) - 10, Screen.height / 2);
 		hudScore.text = "Score: " + score;
 
+		highScore = PlayerPrefs.GetInt ("ThatDuckingGame_HighScore", 0);
+		hudHighScore.anchor = TextAnchor.UpperLeft;
 		hudHighScore.pixelOffset = new Vector2 ((-1 * Screen.width / 2) + 10, Screen.height / 2);
 		hudHighScore.text = "High: " + highScore;
 	}
