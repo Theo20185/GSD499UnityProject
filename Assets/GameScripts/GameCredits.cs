@@ -23,6 +23,8 @@ public class GameCredits : MonoBehaviour {
 	}
 
 	public void CreditScreen(){
+
+		print ("CreditScreen");
 		showCredits = !showCredits;
 		StartCoroutine(playAudio ());
 	}

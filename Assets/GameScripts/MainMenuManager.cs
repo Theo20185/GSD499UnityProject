@@ -6,6 +6,7 @@ public class MainMenuManager : MonoBehaviour {
 	public GUISkin customSkin;
 	public GUITexture crosshair;
 	public GameObject gameCredits;
+	public GameObject gameInfo;
 	public GameObject dog;
 	public GameObject duck;
 
@@ -41,16 +42,24 @@ public class MainMenuManager : MonoBehaviour {
 			GUI.BeginGroup (new Rect (Screen.width / 2 - 300, Screen.height / 2 - 300, 600, 600));
 			GUI.Box (new Rect (0, 0, 600, 600), "That\nDucking\nGame");
 
-			if (GUI.Button (new Rect (205, 450, 100, 50), "Start")) {
+			if (GUI.Button (new Rect (155, 450, 100, 50), "Start")) {
 					Application.LoadLevel ("MainScene");
 			}
 
-			if (GUI.Button (new Rect (305, 450, 100, 50), "Credits")) {
+			if (GUI.Button (new Rect (255, 450, 100, 50), "Credits")) {
 				audio.Stop ();
 				showMenu = false;
 				dog.SetActive(false);
 				duck.SetActive(false);
 				gameCredits.GetComponent<GameCredits> ().CreditScreen ();
+			}
+			
+			if (GUI.Button (new Rect (355, 450, 100, 50), "Info")) {
+				audio.Stop ();
+				showMenu = false;
+				dog.SetActive(false);
+				duck.SetActive(false);
+				gameInfo.GetComponent<GameInfo> ().InfoScreen ();
 			}
 
 			GUI.Label (new Rect (100, 500, 400, 100), "High Score: " + highScore);
