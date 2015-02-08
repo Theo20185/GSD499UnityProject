@@ -258,6 +258,7 @@ public class ShootingTarget : MonoBehaviour {
         isDead = true;
         if (!isClay)
         {
+            flapping.Stop(); //if we were playing a flapping sound then cancel it. We're dead.
             deadState = DeadState.DYING;
             deadTime = Time.time;
             animation.Play("inAirDeath");
