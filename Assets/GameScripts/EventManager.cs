@@ -300,7 +300,7 @@ public class EventManager : MonoBehaviour
 
             if (dtLeft > flyAwayTime) flyAwayTime = dtLeft;
 
-			if (flyAwayTime < 0) 
+			if (flyAwayTime < 0 && allTargetsAreDead == false) 
 			{
 				Debug.Log ("Fly Away Time: " + flyAwayTime.ToString ("N2"));
 
