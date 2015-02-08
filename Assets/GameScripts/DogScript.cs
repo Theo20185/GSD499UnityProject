@@ -13,7 +13,7 @@ public class DogScript : MonoBehaviour {
 	private Transform target;			//final target to travel to
 	private float travelSpeed;			//final travel speed
 	private float walkingSpeed = 1.5f;	//set walking speed
-	private float runningSpeed = 7.0f;	//set running speed
+	private float runningSpeed = 8.0f;	//set running speed
 
 	private bool dogWalking = false;	//true if dog is to walk
 	private bool dogRunning = false;	//true if dog is to run
@@ -192,6 +192,14 @@ public class DogScript : MonoBehaviour {
 					dogToPlayer = false;
 					atTarget = false;
 				}
+				
+				//start walking when near to player
+				if(distanceFromFPC > 15 && dogWalking){
+					dogRunning = false;
+					dogWalking = false;
+					atTarget = false;
+					dogRun(firstPersonController);
+				}
 
 				//start walking when near to player
 				if(distanceFromFPC < 10){
@@ -215,7 +223,9 @@ public class DogScript : MonoBehaviour {
 		//dog animations
 		if (!dogWalking && !dogRunning && !dogJumping && !dogLaughing && !returningPlayer && !dogWithDuck) {
 			animation.Play ("Idled", PlayMode.StopAll);
+			rigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePosition;
 		} else if(!dogLaughing && !dogWithDuck){
+			rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
 			//look at code
 			//tempTarget.x = target.position.x;		
 			//tempTarget.z = target.position.z;
@@ -370,11 +380,9 @@ public class DogScript : MonoBehaviour {
 
 	public void moveToNextStage(){
 		if (eventStarted) {
-			rigidbody.constraints = RigidbodyConstraints.None;
 			rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
 			dogWithDuck = false;
 			eventStarted = false;
-			deadDuck.enabled = false;
 			dogMeshRender.enabled = true;
 			dogRunning = false;
 			dogWalking = false;
@@ -399,7 +407,7 @@ public class DogScript : MonoBehaviour {
 	public void dogCaptureDuck(){
 
 		if(!clayEvent){
-			rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
+			rigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePosition;
 			dogWithDuck = true;
 			dogMeshRender.enabled = true;
 			deadDuck.enabled = true;
@@ -451,12 +459,18 @@ public class DogScript : MonoBehaviour {
 		animationStart = true;
 
 		if(!clayEvent){
-			rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
+			rigidbody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePosition;
 			dogMeshRender.enabled = true;
 			timeSet = Time.time;
 			dogLaughing = true;
 			StartCoroutine (playLaugh ());
 		}
+
+	}
+
+	public void dogHideDuck()
+	{
+		deadDuck.enabled = false;
 
 	}
 

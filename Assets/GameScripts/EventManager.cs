@@ -407,7 +407,7 @@ public class EventManager : MonoBehaviour
 		if (timer <= 0)
 			TransitionOut ();
 
-		dogPrefab.GetComponent<DogScript>().moveToNextStage ();
+		dogPrefab.GetComponent<DogScript>().dogHideDuck ();
 	}
 
 	private void TransitionOut()
@@ -439,6 +439,7 @@ public class EventManager : MonoBehaviour
 	{
 		firstPersonController.GetComponent<MouseLook> ().enabled = true;
 		GameObject.Find ("First Person Controller").GetComponent ("FPSInputController").SendMessage ("EnableControl");
+		dogPrefab.GetComponent<DogScript>().moveToNextStage ();
 	}
 
 	private void SpawnTargets()
