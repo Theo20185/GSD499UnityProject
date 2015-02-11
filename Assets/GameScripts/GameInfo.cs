@@ -46,7 +46,7 @@ public class GameInfo : MonoBehaviour {
 			rectY += addCount;
 			rectY += addCount;
 			rectY += addCount;
-			GUI.Label (new Rect (275, (rectY + 20) + 50, 250, 250), "The Dog will guide player to nearest Shotting Event.");
+			GUI.Label (new Rect (290, (rectY + 20) + 50, 250, 250), "The Dog will guide player to nearest Shotting Event.");
 			rectY += addCount;
 			rectY += addCount;
 			rectY += addCount;
@@ -54,6 +54,7 @@ public class GameInfo : MonoBehaviour {
 			rectY += addCount;
 			rectY += addCount;
 			GUI.Label (new Rect (120, rectY + 60, 250, 250), "Green Tent\nEasy Event");
+			GUI.Label (new Rect (350, rectY + 30, 250, 250), "Items hidden in\nthe game world:");
 			GUI.Label (new Rect (390, rectY + 90, 250, 250), "Duck Decoy\nPress V");
 			rectY += addCount;
 			rectY += addCount;
