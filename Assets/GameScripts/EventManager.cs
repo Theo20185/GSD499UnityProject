@@ -49,6 +49,7 @@ public class EventManager : MonoBehaviour
 	private Transform targetSpawn;
 	private float timer;
 	private int roundNumber;
+    private int totalRounds;
 	private int targetsShotTotal;
 	private int targetsShotRound;
 	private bool targetsInPlay;
@@ -65,7 +66,7 @@ public class EventManager : MonoBehaviour
 	{
 		targetsInPlayList = new List<Transform> ();
         numDecoys = 1;
-        numCalls = 1;
+        numCalls = 1;        
 
 		flyAwayTimer.anchor = TextAnchor.UpperCenter;
 		flyAwayTimer.pixelOffset = new Vector2 (0, Screen.height / 2);
@@ -107,12 +108,12 @@ public class EventManager : MonoBehaviour
         {
             if (Input.GetKeyUp(KeyCode.C)) //spawn a duck call
             {
-                if (numCalls > 0 && roundNumber > 1)
+                if (numCalls > 0)
                 {
                     numCalls--;
                     DuckCall callScript = duckCallPrefab.gameObject.GetComponent<DuckCall>();
                     callScript.startDuckCall();
-                    roundNumber--; //crude way to implement our desired functionality. Removes one round so we can get an extra one
+                    totalRounds++;
                 }
             }
             if (Input.GetKeyUp(KeyCode.V)) //spawn a decoy
@@ -140,6 +141,7 @@ public class EventManager : MonoBehaviour
 		this.targetSpawn = duckSpawn;
 		targetsShotTotal = 0;
 		roundNumber = 0;
+        totalRounds = targetSpawn.GetComponent<TargetSpawn>().spawnRounds;
 
 		InitializeTransitionIn ();
 	}
@@ -165,7 +167,6 @@ public class EventManager : MonoBehaviour
             //clays have the spawn position right by the player so we have to fudge the view position a bit.
             if (targetSpawn.GetComponent<TargetSpawn>().targetType == TargetSpawn.TargetType.Clay)
             {
-                lookAtPos += firstPersonController.transform.forward * 50;
                 lookAtPos.y += 2; //look up a bit
             }
             else
@@ -205,20 +206,20 @@ public class EventManager : MonoBehaviour
 		if (timer < 6f && timer >= 4f) 
 		{
 			requirements.text = string.Concat ("Event Start!","\n",
-			                                   "Rounds: ", targetSpawn.GetComponent<TargetSpawn>().spawnRounds.ToString ("n0"));
+			                                   "Rounds: ", totalRounds.ToString ("n0"));
 		} 
 		else if (timer < 4f && timer >= 2f) 
 		{
 			requirements.text = string.Concat ("Event Start!","\n",
-			                                   "Rounds: ", targetSpawn.GetComponent<TargetSpawn>().spawnRounds.ToString("n0"), "\n", 
+                                               "Rounds: ", totalRounds.ToString("n0"), "\n", 
 			                                   target, " Needed: ", targetSpawn.GetComponent<TargetSpawn>().targetsNeeded.ToString ("n0"));
 		} 
 		else if (timer < 2f) 
 		{
 			requirements.text = string.Concat ("Event Start!","\n",
-			                                   "Rounds: ", targetSpawn.GetComponent<TargetSpawn>().spawnRounds.ToString ("n0"), "\n", 
+                                               "Rounds: ", totalRounds.ToString("n0"), "\n", 
 			                                   target, " Needed: ", targetSpawn.GetComponent<TargetSpawn>().targetsNeeded.ToString ("n0"), "\n",
-			                                   target, " at Event: ", (targetSpawn.GetComponent<TargetSpawn>().spawnRounds * targetSpawn.GetComponent<TargetSpawn>().targetsPerSpawn).ToString ("n0"));
+                                               target, " at Event: ", (totalRounds * targetSpawn.GetComponent<TargetSpawn>().targetsPerSpawn).ToString("n0"));
 		} 
 		else 
 			requirements.text = "Event Start!";
@@ -300,7 +301,7 @@ public class EventManager : MonoBehaviour
 
             if (dtLeft > flyAwayTime) flyAwayTime = dtLeft;
 
-			if (flyAwayTime < 0 && allTargetsAreDead == false) 
+			if ((flyAwayTime < 0 && allTargetsAreDead == false)) 
 			{
 				Debug.Log ("Fly Away Time: " + flyAwayTime.ToString ("N2"));
 
@@ -312,6 +313,18 @@ public class EventManager : MonoBehaviour
 					flyAwayTimer.text = "Time: 0.00";
 			else
 					flyAwayTimer.text = "Time: " + flyAwayTime.ToString ("N2");
+
+            if (shells == 0 && !allTargetsAreDead)
+            {
+				flyAway.enabled = true;
+				flyAwayTimer.text = "Time: 0.00";
+        		for (int targetsInPlayIndex = 0; targetsInPlayIndex < targetsInPlayList.Count; targetsInPlayIndex++) 
+		        {
+                    targetsInPlayList[targetsInPlayIndex].GetComponent<ShootingTarget>().Escape(); 
+                }
+
+            }
+
 		}
 
 		if (targetsInPlayList.Count == 0 && targetsInPlay == true) 
@@ -369,7 +382,7 @@ public class EventManager : MonoBehaviour
 
 		if (timer <= 0) 
 		{
-			if (roundNumber == targetSpawn.GetComponent<TargetSpawn>().spawnRounds)
+			if (roundNumber == totalRounds)
 				InitializeShowEventResults ();
 			else
 				InitializeCountdownToEvent ();

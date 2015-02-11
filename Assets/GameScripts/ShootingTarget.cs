@@ -265,6 +265,11 @@ public class ShootingTarget : MonoBehaviour {
         }
     }
 
+    public void Escape()
+    {
+        escapeTime = 0;
+    }
+
     private void deadUpdate()
     {
         RaycastHit hit;
