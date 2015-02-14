@@ -55,13 +55,13 @@ public class GameInfo : MonoBehaviour {
 			rectY += addCount;
 			GUI.Label (new Rect (120, rectY + 60, 250, 250), "Green Tent\nEasy Event");
 			GUI.Label (new Rect (350, rectY + 30, 250, 250), "Items hidden in\nthe game world:");
-			GUI.Label (new Rect (390, rectY + 90, 250, 250), "Duck Decoy\nPress V");
+			GUI.Label (new Rect (390, rectY + 80, 250, 250), "Duck Decoy\nPress V.\nKeeps ducks\nflying while\ndecoy is in play.");
 			rectY += addCount;
 			rectY += addCount;
 			rectY += addCount;
 			rectY += addCount;
 			GUI.Label (new Rect (120, rectY + 50, 250, 250), "Red Tent\nHard Event");
-			GUI.Label (new Rect (390, rectY + 80, 250, 250), "Duck Call\nPress C");
+			GUI.Label (new Rect (390, rectY + 70, 250, 250), "Duck Call\nPress C.\nAdds a round\nto the event.");
 			rectY += addCount;
 			rectY += addCount;
 			rectY += addCount;

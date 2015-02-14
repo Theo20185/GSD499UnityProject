@@ -116,7 +116,7 @@ public class DogScript : MonoBehaviour {
 
 					if(!dogLayingDown){
 						dogLayingDown = true;
-						animation.Play ("Lie Down", PlayMode.StopAll);
+						//animation.Play ("Lie Down", PlayMode.StopAll);
 					}
 					else if(animation.isPlaying == false){
 						animation.Play ("Rest", PlayMode.StopAll);
