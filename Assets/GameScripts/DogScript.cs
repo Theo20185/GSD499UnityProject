@@ -366,6 +366,9 @@ public class DogScript : MonoBehaviour {
 		if(!clayEvent){
 			if(!animationStart){
 				if (!eventStarted) {
+					dogRunning = false;
+					dogWalking = false;
+					dogJumping = false;
 					dogJump();
 				}
 				else{
